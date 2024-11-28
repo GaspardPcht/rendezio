@@ -4,12 +4,18 @@ logs
 
 # Node modules
 node_modules/
-npm-debug.log*
-yarn-error.log*
+
+# Environnements locaux
+.env
 
 # Build outputs
 .next/
 dist/
 
-# Environnement local
-.env
+# Frontend
+front/.next
+front/node_modules
+
+# Backend
+back/node_modules
+back/dist
