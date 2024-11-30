@@ -4,11 +4,25 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Importer CORS
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const praticienRouter = require('./routes/praticien');
 
 const app = express();
+
+// Configuration CORS (autorise toutes les origines par défaut)
+app.use(cors());
+
+// Ou configuration spécifique
+/*
+app.use(cors({
+  origin: 'http://localhost:3000', // Autorise seulement votre frontend local
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
+  credentials: true, // Si vous utilisez des cookies
+}));
+*/
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -18,15 +32,16 @@ mongoose
   .catch((err) => console.error('Erreur MongoDB :', err));
 
 // Middlewares globaux
-app.use(logger('dev')); // Journalisation des requêtes
-app.use(express.json()); // Analyse des requêtes JSON
-app.use(express.urlencoded({ extended: false })); // Analyse des requêtes encodées en URL
-app.use(cookieParser()); // Analyse des cookies
-app.use(express.static(path.join(__dirname, 'public'))); // Servir les fichiers statiques
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
-app.use('/', indexRouter); // Route pour `/`
-app.use('/users', usersRouter); // Route pour `/users`
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/praticien', praticienRouter);
 
 // Gestion des erreurs 404
 app.use((req, res, next) => {
