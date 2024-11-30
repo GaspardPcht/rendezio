@@ -1,21 +1,26 @@
+/* Chargement de Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Variables globales */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ffffff; /* Fond clair par défaut */
+  --foreground: #000000; /* Texte sombre par défaut */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #121212; /* Fond sombre pour le mode dark */
+    --foreground: #ffffff; /* Texte clair pour le mode dark */
   }
 }
 
+/* Styles globaux */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--foreground); /* Couleur du texte selon le thème */
+  background: var(--background); /* Couleur de fond selon le thème */
+  font-family: var(--font-roboto), sans-serif; /* Utilisation de la police Roboto */
+  margin: 0; /* Supprime les marges par défaut */
+  padding: 16px; /* Marges internes uniformes */
 }
