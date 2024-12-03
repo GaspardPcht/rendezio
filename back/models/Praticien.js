@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 
 const praticienSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true }, // Nom complet du praticien
-    title: { type: String, required: true }, // Titre professionnel
-    email: { type: String, required: true }, // Adresse email de contact
-    phoneNumber: { type: String }, // Numéro de téléphone
+    name: { type: String, required: true }, 
+    title: { type: String, required: true }, 
+    email: { type: String, required: true }, 
+    phoneNumber: { type: String }, 
     services: [
       {
-        name: { type: String, required: true }, // Nom du service
-        duration: { type: Number, required: true }, // Durée en minutes
-        price: { type: Number, required: true }, // Prix en euros
+        name: { type: String, required: true }, 
+        duration: { type: Number, required: true }, 
+        price: { type: Number, required: true }, 
       },
     ],
     address: {
@@ -28,6 +28,7 @@ const praticienSchema = new mongoose.Schema(
       saturday: { type: String },
       sunday: { type: String },
     },
+    token: { type: String, required: true, unique: true }, 
   },
   { timestamps: true }
 );
