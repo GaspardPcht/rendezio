@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import ReduxProvider from "../../store/reduxProvider";
 
 // Charger la police Roboto
 const roboto = localFont({
@@ -19,6 +20,7 @@ const roboto = localFont({
   variable: "--font-roboto",
 });
 
+// Metadata pour SEO
 export const metadata: Metadata = {
   title: "Rendezio",
   description: "Rendezio - Simplifiez vos réservations en ligne",
@@ -52,7 +54,6 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon-32x32.png",
     apple: "/apple-touch-icon.png",
   },
   robots: {
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   },
 };
 
-// Déplacez les propriétés `themeColor`, `colorScheme`, et `viewport` ici :
+// Propriétés d'affichage
 export const viewport = {
   width: "device-width",
   initialScale: 1,
@@ -82,7 +83,8 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${roboto.variable} antialiased`}>
-        {children}
+        {/* Envelopper l'application avec le Provider Redux */}
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );

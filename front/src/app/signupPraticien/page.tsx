@@ -1,6 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../../reducers/praticien';
+
 
 export default function CreatePractitionerForm() {
   const [formData, setFormData] = useState({
@@ -25,9 +28,12 @@ export default function CreatePractitionerForm() {
   });
 
   const router = useRouter();
+  const dispatch = useDispatch(); //
 
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -102,6 +108,13 @@ export default function CreatePractitionerForm() {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Une erreur est survenue.');
       }
+
+      const data = await response.json();
+      console.log(data.token)
+      const { token } = data.token; 
+
+      // Dispatch le token dans le store Redux
+      dispatch(setToken(token));
 
       setMessage('Praticien créé avec succès !');
       setFormData({
