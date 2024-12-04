@@ -1,12 +1,13 @@
-'use client'
-import React, { useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+'use client';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Button from '../components/Button';
 
 export default function Signin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter(); 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const checkSignin = async () => {
     try {
@@ -27,7 +28,7 @@ export default function Signin() {
 
       // Redirige vers la page d'accueil ou une autre page
       router.push('/dashboard');
-      return data; 
+      return data;
     } catch (error) {
       console.error('Error:', error);
       alert('Erreur de connexion. Veuillez vérifier vos identifiants.');
@@ -38,26 +39,31 @@ export default function Signin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email.trim() === "" || password.trim() === "") {
-      alert("Veuillez remplir tous les champs.");
+    if (email.trim() === '' || password.trim() === '') {
+      alert('Veuillez remplir tous les champs.');
       return;
     }
 
-    console.log("Tentative de connexion avec :", { email, password });
-    await checkSignin(); 
+    console.log('Tentative de connexion avec :', { email, password });
+    await checkSignin();
 
-    setEmail("");
-    setPassword("");
+    setEmail('');
+    setPassword('');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
-        <Image src={"/Logo/logo.png"} alt="logo" width={50} height={50} />
-        <h2 className="text-2xl font-bold mb-4 text-black text-center">Se connecter</h2>
+        <Image src={'/Logo/logo.png'} alt="logo" width={50} height={50} />
+        <h2 className="text-2xl font-bold mb-4 text-black text-center">
+          Se connecter
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Adresse e-mail
             </label>
             <input
@@ -72,7 +78,10 @@ export default function Signin() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Mot de passe
             </label>
             <input
@@ -87,16 +96,11 @@ export default function Signin() {
             />
           </div>
           <div>
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Se connecter
-            </button>
+            <Button text="Se connecter" />
           </div>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
-          Vous n'avez pas de compte ?{" "}
+          Vous n'avez pas de compte ?{' '}
           <a href="/signup" className="text-blue-500 hover:underline">
             Inscrivez-vous
           </a>

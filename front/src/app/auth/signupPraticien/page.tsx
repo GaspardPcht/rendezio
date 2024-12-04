@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { setToken } from '../../../reducers/praticien';
+import { setToken } from '../../../../reducers/praticien';
+import Button from '../../components/Button';
 
 
 export default function CreatePractitionerForm() {
@@ -110,8 +111,8 @@ export default function CreatePractitionerForm() {
       }
 
       const data = await response.json();
-      console.log(data.token)
-      const { token } = data.token; 
+    console.log(data.token)
+      const  token   = data.token; 
 
       // Dispatch le token dans le store Redux
       dispatch(setToken(token));
@@ -368,13 +369,7 @@ export default function CreatePractitionerForm() {
                 </button>
               </div>
             ))}
-            <button
-              type="button"
-              onClick={addService}
-              className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-            >
-              Ajouter un service
-            </button>
+         <Button text=' Ajouter un service' />
           </div>
           <div>
             <button
