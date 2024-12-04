@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
+const Practitioner = require('../models/Praticien')
 
 const router = express.Router();
 
@@ -44,6 +45,7 @@ router.post('/signup', async (req, res) => {
 
     res.status(201).json({
       message: 'Compte créé avec succès.',
+      userId: newUser._id,
       user: responseUser,
     });
   } catch (err) {
@@ -73,11 +75,47 @@ router.post('/signin', async (req, res) => {
     const { password: _, ...userWithoutPassword } = user.toObject();
     res.status(200).json({
       message: 'Connexion réussie.',
+      userId: user._id,
       user: userWithoutPassword,
     });
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.', error: err.message });
   }
 });
+
+
+// Route pour associer un utilisateur à un praticien
+router.post('/associate-pratitien', async (req, res) => {
+  const { userId, practitionerEmail } = req.body;
+
+  try {
+    // Vérifie si l'utilisateur existe
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur introuvable.' });
+    }
+
+    // Vérifie si le praticien existe
+    const practitioner = await Practitioner.findOne({ email: practitionerEmail });
+    if (!practitioner) {
+      return res.status(404).json({ message: 'Praticien introuvable avec cet email.' });
+    }
+
+    // Associe l'utilisateur au praticien
+    user.practitioner = practitioner._id; 
+    await user.save();
+
+    res.status(200).json({
+      message: 'Utilisateur associé au praticien avec succès.',
+      user: {
+        ...user.toObject(),
+        practitioner: practitioner.toObject(), // Retourne les infos du praticien associées
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur serveur.', error: err.message });
+  }
+});
+
 
 module.exports = router;

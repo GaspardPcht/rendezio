@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     phoneNumber: { type: String },
     token: { type: String },
+    practitioner: { type: mongoose.Schema.Types.ObjectId, ref: 'Practitioner' }, 
   },
   {
     timestamps: true,
