@@ -29,7 +29,15 @@ const praticienSchema = new mongoose.Schema(
       sunday: { type: String },
     },
     token: { type: String, required: true, unique: true }, 
+    googleTokens: {
+      access_token: { type: String }, // Token d'accès Google
+      refresh_token: { type: String }, // Token de rafraîchissement
+      scope: { type: String }, // Portée d'accès
+      token_type: { type: String }, // Type de token
+      expiry_date: { type: Number }, // Date d'expiration
+    },
   },
+  
   { timestamps: true }
 );
 

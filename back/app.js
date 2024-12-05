@@ -9,6 +9,8 @@ const cors = require('cors'); // Importer CORS
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const praticienRouter = require('./routes/praticien');
+const calendarRouter = require('./routes/calendar');
+
 
 const app = express();
 
@@ -16,13 +18,13 @@ const app = express();
 app.use(cors());
 
 // Ou configuration spécifique
-/*
+
 app.use(cors({
   origin: 'http://localhost:3000', // Autorise seulement votre frontend local
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
   credentials: true, // Si vous utilisez des cookies
 }));
-*/
+
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -42,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/praticien', praticienRouter);
+app.use('/calendar', calendarRouter);
 
 // Gestion des erreurs 404
 app.use((req, res, next) => {

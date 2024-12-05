@@ -10,7 +10,7 @@ interface User {
 }
 
 interface ViewClientsProps {
-  practitionerEmail: string; // Email du praticien passé en tant que prop
+  practitionerEmail: string; 
 }
 
 const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
