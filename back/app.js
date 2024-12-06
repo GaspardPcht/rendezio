@@ -19,11 +19,11 @@ app.use(cors());
 
 // Ou configuration spécifique
 
-app.use(cors({
-  origin: 'http://localhost:3000', // Autorise seulement votre frontend local
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
-  credentials: true, // Si vous utilisez des cookies
-}));
+// app.use(cors({
+//   origin: 'http://localhost:3000', // Autorise seulement votre frontend local
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
+//   credentials: true, // Si vous utilisez des cookies
+// }));
 
 
 mongoose
