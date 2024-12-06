@@ -155,7 +155,6 @@ router.get('/upcoming-appointments', async (req, res) => {
       orderBy: 'startTime',
     });
 
-    console.log('Événements trouvés :', response.data.items); // Log des événements retournés
     res.status(200).json({ events: response.data.items });
   } catch (error) {
     console.error('Erreur lors de la récupération des rendez-vous :', error);

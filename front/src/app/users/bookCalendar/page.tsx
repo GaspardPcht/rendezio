@@ -6,7 +6,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 export default function AddBook() {
   const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
@@ -15,7 +14,7 @@ export default function AddBook() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!startDate || !endDate) {
+    if (!startDate) {
       alert('Veuillez sélectionner une date et une heure pour le rendez-vous.');
       return;
     }
@@ -25,6 +24,10 @@ export default function AddBook() {
       return;
     }
 
+    // Calcul automatique de l'heure de fin (45 minutes après l'heure de début)
+    const endDate = new Date(startDate.getTime());
+    endDate.setMinutes(endDate.getMinutes() + 45);
+
     setLoading(true);
 
     const response = await fetch('http://localhost:3000/calendar/create-appointment', {
@@ -33,7 +36,7 @@ export default function AddBook() {
       body: JSON.stringify({
         praticienId: '675071ebda842be512fb980d',
         title: `Consultation avec ${name} ${surname}`,
-        description: 'Consultation avec le patient ${name} ${surname}',
+        description: `Consultation avec le patient ${name} ${surname}`,
         startTime: startDate.toISOString(),
         endTime: endDate.toISOString(),
         client: {
@@ -48,18 +51,16 @@ export default function AddBook() {
     setLoading(false);
 
     if (response.ok) {
-      alert('Rendez-vous créé et ajouté au calendrier Google !');
       setStartDate(null);
-      setEndDate(null);
       setName('');
       setSurname('');
       setPhone('');
       setEmail('');
+      window.location.href = '../../ConfirmationPage';
     } else {
       alert('Erreur lors de la création du rendez-vous.');
     }
   };
-
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -72,7 +73,7 @@ export default function AddBook() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre nom"
               required
             />
@@ -84,7 +85,7 @@ export default function AddBook() {
               type="text"
               value={surname}
               onChange={(e) => setSurname(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre prénom"
               required
             />
@@ -96,7 +97,7 @@ export default function AddBook() {
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre numéro de téléphone"
               required
             />
@@ -108,7 +109,7 @@ export default function AddBook() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre adresse e-mail"
               required
             />
@@ -124,21 +125,7 @@ export default function AddBook() {
               timeIntervals={15}
               dateFormat="yyyy-MM-dd HH:mm"
               placeholderText="Sélectionnez la date et l'heure"
-              className="w-full p-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">Date et heure de fin :</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              dateFormat="yyyy-MM-dd HH:mm"
-              placeholderText="Sélectionnez la date et l'heure"
-              className="w-full p-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
             />
           </div>
 
