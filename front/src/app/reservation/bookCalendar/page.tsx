@@ -73,7 +73,7 @@ export default function AddBook() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre nom"
               required
             />
@@ -85,7 +85,7 @@ export default function AddBook() {
               type="text"
               value={surname}
               onChange={(e) => setSurname(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre prénom"
               required
             />
@@ -97,7 +97,7 @@ export default function AddBook() {
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre numéro de téléphone"
               required
             />
@@ -109,7 +109,7 @@ export default function AddBook() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre adresse e-mail"
               required
             />
@@ -125,7 +125,7 @@ export default function AddBook() {
               timeIntervals={15}
               dateFormat="yyyy-MM-dd HH:mm"
               placeholderText="Sélectionnez la date et l'heure"
-              className="w-full p-2 border rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
             />
           </div>
 

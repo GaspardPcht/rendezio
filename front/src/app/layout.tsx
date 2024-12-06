@@ -3,16 +3,17 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ReduxProvider from "../../store/reduxProvider";
 
+
 // Charger la police Roboto
 const roboto = localFont({
   src: [
     {
-      path: "./fonts/Roboto-Regular.ttf",
+      path: "./styles/fonts/Roboto-Regular.ttf", // Correct
       weight: "400",
       style: "normal",
     },
     {
-      path: "./fonts/Roboto-Bold.ttf",
+      path: "./styles/fonts/Roboto-Bold.ttf", // Correct
       weight: "700",
       style: "normal",
     },
