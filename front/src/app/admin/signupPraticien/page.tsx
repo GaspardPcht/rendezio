@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../../../../reducers/praticien';
-import Button from '../../components/Button';
+import Button from '../../../../components/Button';
 
 
 export default function CreatePractitionerForm() {

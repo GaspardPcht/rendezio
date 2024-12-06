@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
-const Practitioner = require('../models/Praticien')
+const Praticien = require('../models/Praticien')
 
 const router = express.Router();
 
@@ -96,7 +96,7 @@ router.post('/associate-pratitien', async (req, res) => {
     }
 
     // Vérifie si le praticien existe
-    const practitioner = await Practitioner.findOne({ email: practitionerEmail });
+    const practitioner = await Praticien.findOne({ email: practitionerEmail });
     if (!practitioner) {
       return res.status(404).json({ message: 'Praticien introuvable avec cet email.' });
     }

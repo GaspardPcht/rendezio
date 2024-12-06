@@ -1,8 +1,8 @@
 
 import React from "react";
-import Button from "./components/Button";
+import Button from "../../components/Button";
 import Link from "next/link";
-import ConnexionGoogle from "./components/ConnexionGoogle";
+import ConnexionGoogle from "../../components/ConnexionGoogle";
 
 export default function Home() {
 
