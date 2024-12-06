@@ -1,18 +1,31 @@
 'use client';
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import Button from '../../../../components/Button';
 import { useRouter } from 'next/navigation';
 import DashboardCalendar from '../../../../components/Calendrier';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken } from '../../../../reducers/praticien'; 
 
 export default function Dashboard() {
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token'); 
+    if (!token) {
+      router.push('/admin'); 
+    } else {
+      dispatch(setToken(token)); // Dispatcher le token dans le reducer
+    }
+  }, [router, dispatch]);
 
   const handleClick = () => {
     router.push('/admin/allClients');
   };
 
   const handleLinkGoogle = () => {
-    window.location.href = 'http://localhost:5000/auth/google';
+    window.location.href = 'http://localhost:3000/calendar/auth/google';
   };
 
   const handleClicks = () => {
@@ -22,24 +35,24 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* En-tête */}
-      <header className="bg-white shadow-md p-4 mb-6">
+      <header className="bg-white shadow-md p-4 mb-6 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard Rendezio</h1>
         <p className="text-gray-600">
-          Gérez vos rendez-vous et suivez vos statistiques
+          Gérez vos rendez-vous et suivez vos statistiques.
         </p>
       </header>
 
       {/* Contenu principal */}
-      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between space-y-6 lg:space-y-0 lg:space-x-6">
+      <div className="flex flex-col lg:flex-row lg:items-start justify-between lg:space-x-6 space-y-6 lg:space-y-0">
         {/* Colonne gauche */}
         <div className="w-full lg:w-1/4 space-y-6">
-          {/* Carte 1 */}
+          {/* Carte 1 : Rendez-vous */}
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-800">
               Rendez-vous à venir
             </h2>
             <p className="text-gray-600 mt-2">
-              Vous avez 5 rendez-vous prévus cette semaine.
+              Vous avez <span className="font-bold">5 rendez-vous</span> prévus cette semaine.
             </p>
             <div className="mt-4">
               <Button text="Voir mes rendez-vous" onClick={handleClicks} />
@@ -52,10 +65,12 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Carte 2 */}
+          {/* Carte 2 : Statistiques */}
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-800">Statistiques</h2>
-            <p className="text-gray-600 mt-2">Taux de réservation : 85%</p>
+            <p className="text-gray-600 mt-2">
+              Taux de réservation : <span className="font-bold">85%</span>
+            </p>
             <div className="mt-4">
               <Button
                 text="Voir les détails"
@@ -72,7 +87,7 @@ export default function Dashboard() {
 
         {/* Colonne droite */}
         <div className="w-full lg:w-1/4 space-y-6">
-          {/* Carte 3 */}
+          {/* Carte 3 : Mes clients */}
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-800">Mes clients</h2>
             <p className="text-gray-600 mt-2">Voir la totalité de mes clients.</p>

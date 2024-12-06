@@ -6,7 +6,7 @@ export default function ConfirmationPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold text-blue-600 mb-4">Merci pour votre rendez-vous !</h1>
+        <h1 className="text-3xl font-bold text-blue-500 mb-4">Merci pour votre rendez-vous !</h1>
         <p className="text-gray-700 mb-6">
           Votre rendez-vous a bien été pris en compte. Vous recevrez un e-mail de confirmation
           contenant les détails de votre réservation.

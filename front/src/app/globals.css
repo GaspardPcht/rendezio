@@ -1,8 +1,7 @@
-/* Chargement de Tailwind */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 /* Variables globales */
 :root {
   --background: #ffffff; /* Fond clair par défaut */

@@ -1,7 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
+import { useRouter } from 'next/navigation';
+import { setToken } from '../../../../reducers/praticien';
 
 interface Service {
   name: string;
@@ -49,6 +51,18 @@ const PractitionerInfo: React.FC = () => {
     saturday: 'Samedi',
     sunday: 'Dimanche',
   };
+
+  const router = useRouter()
+const dispatch = useDispatch()
+    // Vérifier le token et dispatcher dans le store
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/admin');
+      } else {
+        dispatch(setToken(token)); // Dispatcher le token dans le reducer
+      }
+    }, [router, dispatch]);
 
   useEffect(() => {
     const fetchPractitioner = async () => {

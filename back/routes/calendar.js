@@ -55,7 +55,7 @@ router.get('/auth/google/callback', async (req, res) => {
     praticien.googleTokens = tokens;
     await praticien.save(); // Sauvegarder le document mis à jour
 
-    res.redirect('http://localhost:3001/Praticien/dashboard');
+    res.redirect('http://localhost:3001/admin/dashboard');
   } catch (error) {
     console.error('Erreur lors de la liaison du compte Google :', error);
     res.status(500).send('Erreur lors de la liaison du compte Google.');

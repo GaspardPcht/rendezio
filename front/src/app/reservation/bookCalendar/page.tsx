@@ -56,7 +56,7 @@ export default function AddBook() {
       setSurname('');
       setPhone('');
       setEmail('');
-      window.location.href = '../../ConfirmationPage';
+      window.location.href = '../../reservation/ConfirmationPage';
     } else {
       alert('Erreur lors de la création du rendez-vous.');
     }
