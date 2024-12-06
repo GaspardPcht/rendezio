@@ -2,6 +2,7 @@
 import React from "react";
 import Button from "./components/Button";
 import Link from "next/link";
+import ConnexionGoogle from "./components/ConnexionGoogle";
 
 export default function Home() {
 
@@ -32,6 +33,13 @@ export default function Home() {
       >
         RESERVE
       </Link>
-    </div>  
+      <Link
+        href="/Praticien/calendar"
+        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+      >
+        Calendrier
+      </Link>
+<ConnexionGoogle/>
+</div>  
   );
 }

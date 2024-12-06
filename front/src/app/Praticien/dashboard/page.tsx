@@ -14,6 +14,10 @@ export default function Dashboard() {
     window.location.href = 'http://localhost:5000/auth/google';
   };
 
+  const handleClicks = () => {
+    router.push('/users/bookCalendar');
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -38,7 +42,7 @@ export default function Dashboard() {
           <div className="mt-4">
             <Button
               text="Voir mes rendez-vous"
-              onClick={() => alert('Voir les stats')}
+              onClick={() => handleClicks()}
             />
           </div>
           <button onClick={handleLinkGoogle}>
