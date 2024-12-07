@@ -1,45 +1,42 @@
-
+'use client'
 import React from "react";
-import Button from "../../components/Button";
 import Link from "next/link";
-import ConnexionGoogle from "../../components/ConnexionGoogle";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-
-
+  const router = useRouter()
+  const handleConnection = () => {
+    router.push('/auth/signin') 
+  }
+  const handleInscription = () => {
+    router.push('/auth/signup') 
+  }
+  
   return (
-    <div>
-      <a
-        href="/signupPraticien"
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        Inscription Praticien
-      </a>
-      <a
-        href="/infosPraticien"
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        Infos Praticien
-      </a>
-      <Link
-        href="/Praticien/dashboard"
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        Dashboard
-      </Link>
-      <Link
-        href="/reservation/bookCalendar"
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        RESERVE
-      </Link>
-      <Link
-        href="/Praticien/calendar"
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
-        Calendrier
-      </Link>
-<ConnexionGoogle/>
-</div>  
+    <div className="bg-white min-h-screen">
+      <header className="flex items-center justify-between px-8 py-4 border-b">
+        {/* Logo */}
+        <div className="text-2xl font-bold">
+          <img
+            src="/Logo/logo.png"
+            alt="Rendezio Logo"
+            className="h-16 w-16"
+          />
+        </div>
+        {/* Navigation */}
+        <nav className="flex items-center space-x-6">
+          <Link href="/admin" legacyBehavior>
+            <a className="text-gray-700 hover:text-blue-500">Entreprise</a>
+          </Link>
+          {/* Connexion */}
+          <button onClick={handleConnection} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Connexion
+          </button>
+          <button onClick={handleInscription} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Inscription
+          </button>
+        </nav>
+      </header>
+    </div>
   );
 }
