@@ -40,7 +40,6 @@ const PractitionerInfo: React.FC = () => {
   const token = useSelector((state: RootState) => state.practitioner.token);
   // const tokeen = process.env.NEXT_PUBLIC_TOKEN_PRATICIEN;
 
-
   // Mapping des jours de la semaine en français
   const daysInFrench: { [key: string]: string } = {
     monday: 'Lundi',
@@ -52,18 +51,16 @@ const PractitionerInfo: React.FC = () => {
     sunday: 'Dimanche',
   };
 
-  const router = useRouter()
-const dispatch = useDispatch()
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-useEffect(() => {
-  if (!token) {
- 
-    router.push('/admin');
-  } else {
-
-    dispatch(setToken(token));
-  }
-}, [token, router, dispatch]);
+  useEffect(() => {
+    if (!token) {
+      router.push('/admin');
+    } else {
+      dispatch(setToken(token));
+    }
+  }, [token, router, dispatch]);
 
   useEffect(() => {
     const fetchPractitioner = async () => {

@@ -162,4 +162,46 @@ router.get('/upcoming-appointments', async (req, res) => {
   }
 });
 
+/** ====================
+ * Route : Vérifier la connexion Google
+ * ==================== */
+router.get('/check-google-connection', async (req, res) => {
+  try {
+    const { praticienId } = req.query;
+
+    if (!praticienId) {
+      return res.status(400).json({ error: 'ID du praticien requis.' });
+    }
+
+    // Vérifiez si le praticien existe
+    const praticien = await Praticiens.findById(praticienId);
+    if (!praticien) {
+      return res.status(404).json({ error: 'Praticien non trouvé.' });
+    }
+
+    const tokens = praticien.googleTokens;
+    console.log('tokens bro',tokens)
+
+    // Vérifiez si les tokens Google sont présents
+    if (!tokens || !tokens.access_token) {
+      return res.status(200).json({ connected: false });
+    }
+
+    // Configurez l'OAuth2Client avec les tokens
+    oAuth2Client.setCredentials(tokens);
+
+    // Testez l'accès à Google Calendar
+    try {
+      await oAuth2Client.getAccessToken();
+      return res.status(200).json({ connected: true });
+    } catch (error) {
+      console.error('Erreur lors de la vérification des tokens :', error);
+      return res.status(200).json({ connected: false });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la vérification de la connexion Google :', error);
+    res.status(500).json({ error: 'Erreur lors de la vérification de la connexion Google.' });
+  }
+});
+
 module.exports = router;

@@ -5,14 +5,17 @@ import FullCalendar from '@fullcalendar/react'; // Import FullCalendar
 import dayGridPlugin from '@fullcalendar/daygrid'; // DayGrid View
 import timeGridPlugin from '@fullcalendar/timegrid'; // TimeGrid View
 import interactionPlugin from '@fullcalendar/interaction'; // Drag and Drop
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 export default function ModernCalendar() {
   const [events, setEvents] = useState([]);
+   const praticienID = useSelector((state: RootState) => state.practitioner.id);
 
   const fetchEvents = async () => {
     try {
       const response = await fetch(
-        'http://localhost:3000/calendar/upcoming-appointments?praticienId=675071ebda842be512fb980d'
+      `http://localhost:3000/calendar/upcoming-appointments?praticienId=${praticienID}`
       );
       const data = await response.json();
 

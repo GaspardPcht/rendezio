@@ -34,7 +34,6 @@ export default function AdminLogin() {
 
       const { token, id } = data.praticien; // Assurez-vous que l'API renvoie un ID et un token
 
-      // Stocker dans Redux
       dispatch(setToken(token));
       dispatch(setId(id));
 
