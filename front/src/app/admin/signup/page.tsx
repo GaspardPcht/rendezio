@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { setToken } from '../../../../reducers/praticien';
+import { setToken, setId } from '../../../../reducers/praticien';
 
 export default function CreatePractitionerForm() {
   const [formData, setFormData] = useState({
@@ -103,9 +103,10 @@ export default function CreatePractitionerForm() {
       }
 
       const data = await response.json();
-      const token = data.token;
+      const { token, id } = data.praticien;
 
       dispatch(setToken(token));
+      dispatch(setId(id));
 
       setMessage('Praticien créé avec succès !');
       setFormData({
@@ -161,7 +162,10 @@ export default function CreatePractitionerForm() {
         >
           {/* Nom complet */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
               Nom complet
             </label>
             <input
@@ -177,7 +181,10 @@ export default function CreatePractitionerForm() {
 
           {/* Titre professionnel */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
               Titre professionnel
             </label>
             <input
@@ -193,7 +200,10 @@ export default function CreatePractitionerForm() {
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -209,7 +219,10 @@ export default function CreatePractitionerForm() {
 
           {/* Numéro de téléphone */}
           <div>
-            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="phoneNumber"
+              className="block text-sm font-medium text-gray-700"
+            >
               Numéro de téléphone
             </label>
             <input
@@ -225,7 +238,10 @@ export default function CreatePractitionerForm() {
 
           {/* Adresse */}
           <div>
-            <label htmlFor="address" className="block text-lg font-medium text-gray-700">
+            <label
+              htmlFor="address"
+              className="block text-lg font-medium text-gray-700"
+            >
               Adresse
             </label>
             <input
@@ -259,7 +275,10 @@ export default function CreatePractitionerForm() {
 
           {/* Mot de passe */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Mot de passe
             </label>
             <input
@@ -275,7 +294,10 @@ export default function CreatePractitionerForm() {
 
           {/* Services */}
           <div>
-            <label htmlFor="services" className="block text-lg font-medium text-gray-700">
+            <label
+              htmlFor="services"
+              className="block text-lg font-medium text-gray-700"
+            >
               Services
             </label>
             {formData.services.map((service, index) => (
@@ -353,7 +375,11 @@ export default function CreatePractitionerForm() {
                     <input
                       type="text"
                       placeholder="ex : 9:00 - 18:00"
-                      value={formData.workingHours[day as keyof typeof formData.workingHours]}
+                      value={
+                        formData.workingHours[
+                          day as keyof typeof formData.workingHours
+                        ]
+                      }
                       onChange={(e) =>
                         handleWorkingHoursChange(day, e.target.value)
                       }
@@ -367,7 +393,10 @@ export default function CreatePractitionerForm() {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-lg font-medium text-gray-700">
+            <label
+              htmlFor="description"
+              className="block text-lg font-medium text-gray-700"
+            >
               Description
             </label>
             <textarea

@@ -6,19 +6,23 @@ import { useRouter } from 'next/navigation';
 import DashboardCalendar from '../../../../components/Calendrier';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../../../reducers/praticien'; 
+import { RootState } from '../../../../store/store';
 
 export default function Dashboard() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const token = useSelector((state: RootState) => state.practitioner.token);
+
   useEffect(() => {
-    const token = localStorage.getItem('token'); 
     if (!token) {
-      router.push('/admin'); 
+      // Si le token est absent, rediriger vers la page de connexion
+      router.push('/admin');
     } else {
-      dispatch(setToken(token)); // Dispatcher le token dans le reducer
+      // S'assurer que le token est bien défini dans le reducer (si nécessaire)
+      dispatch(setToken(token));
     }
-  }, [router, dispatch]);
+  }, [token, router, dispatch]);
 
   const handleClick = () => {
     router.push('/admin/allClients');

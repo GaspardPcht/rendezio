@@ -2,8 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../../../reducers/praticien'; 
+import { RootState } from '../../../../store/store';
 
 interface Appointment {
   id: string;
@@ -20,15 +21,17 @@ export default function UpcomingAppointments() {
   const router = useRouter();
   const dispatch = useDispatch(); // Initialiser le dispatch pour Redux
 
-  // Vérifier le token et dispatcher dans le store
+  const token = useSelector((state: RootState) => state.practitioner.token);
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) {
+      // Si le token est absent, rediriger vers la page de connexion
       router.push('/admin');
     } else {
-      dispatch(setToken(token)); // Dispatcher le token dans le reducer
+      // S'assurer que le token est bien défini dans le reducer (si nécessaire)
+      dispatch(setToken(token));
     }
-  }, [router, dispatch]);
+  }, [token, router, dispatch]);
 
   useEffect(() => {
     const fetchAppointments = async () => {

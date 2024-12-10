@@ -38,7 +38,7 @@ const PractitionerInfo: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const token = useSelector((state: RootState) => state.practitioner.token);
-  const tokeen = process.env.NEXT_PUBLIC_TOKEN_PRATICIEN;
+  // const tokeen = process.env.NEXT_PUBLIC_TOKEN_PRATICIEN;
 
 
   // Mapping des jours de la semaine en français
@@ -54,15 +54,16 @@ const PractitionerInfo: React.FC = () => {
 
   const router = useRouter()
 const dispatch = useDispatch()
-    // Vérifier le token et dispatcher dans le store
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/admin');
-      } else {
-        dispatch(setToken(token)); // Dispatcher le token dans le reducer
-      }
-    }, [router, dispatch]);
+
+useEffect(() => {
+  if (!token) {
+ 
+    router.push('/admin');
+  } else {
+
+    dispatch(setToken(token));
+  }
+}, [token, router, dispatch]);
 
   useEffect(() => {
     const fetchPractitioner = async () => {
@@ -70,7 +71,7 @@ const dispatch = useDispatch()
         const response = await fetch('http://localhost:3000/praticien/infos', {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${tokeen}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });

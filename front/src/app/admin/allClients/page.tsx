@@ -1,8 +1,10 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { RootState } from '../../../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../../../reducers/praticien';
+import { ST } from 'next/dist/shared/lib/utils';
 interface User {
   _id: string;
   firstName: string;
@@ -21,15 +23,17 @@ const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const dispatch = useDispatch();
+  const token = useSelector((state: RootState) => state.practitioner.token);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) {
+      // Si le token est absent, rediriger vers la page de connexion
       router.push('/admin');
     } else {
-      dispatch(setToken(token)); // Dispatcher le token dans le reducer
+      // S'assurer que le token est bien défini dans le reducer (si nécessaire)
+      dispatch(setToken(token));
     }
-  }, [router, dispatch]);
+  }, [token, router, dispatch]);
 
   const fetchAllUsersForPractitioner = async (
     email: string
@@ -63,9 +67,8 @@ const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const fetchedUsers = await fetchAllUsersForPractitioner(
-          practitionerEmail
-        );
+        const fetchedUsers =
+          await fetchAllUsersForPractitioner(practitionerEmail);
         setUsers(fetchedUsers); // Stocker les utilisateurs dans l'état
       } catch (err: any) {
         setError(err.message); // Stocker le message d'erreur

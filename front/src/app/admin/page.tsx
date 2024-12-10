@@ -3,7 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { useDispatch } from 'react-redux';
+import { setToken, setId } from '../../../reducers/praticien';
+
 export default function AdminLogin() {
+  const dispatch = useDispatch();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,8 +32,11 @@ export default function AdminLogin() {
         throw new Error(data.message || 'Erreur lors de la connexion.');
       }
 
-      // Stocker le token (localStorage ou Redux selon votre choix)
-      localStorage.setItem('adminToken', data.praticien.token);
+      const { token, id } = data.praticien; // Assurez-vous que l'API renvoie un ID et un token
+
+      // Stocker dans Redux
+      dispatch(setToken(token));
+      dispatch(setId(id));
 
       // Redirection vers le tableau de bord
       router.push('/admin/dashboard');
