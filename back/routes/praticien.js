@@ -71,6 +71,7 @@ router.post('/create', async (req, res) => {
     res.json({
       message: 'Praticien créé avec succès.',
       praticien: newPraticien,
+      id: newPraticien._id,
       token,
     });
   } catch (error) {
@@ -96,12 +97,17 @@ router.post('/login', async (req, res) => {
       return res.status(404).json({ message: 'Praticien non trouvé.' });
     }
 
+    if (!praticien.password) {
+      return res.status(400).json({ message: 'Hash du mot de passe manquant dans la base de données.' });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, praticien.password);
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Mot de passe incorrect.' });
     }
 
-    const token = generateToken();
+    const token = generateToken(); // Supposons que cette fonction existe
     praticien.token = token;
 
     await praticien.save();
@@ -116,7 +122,8 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (error) {
-    res.json({
+    console.error('Erreur lors de la connexion :', error);
+    res.status(500).json({
       message: 'Erreur serveur lors de la connexion.',
       error: error.message,
     });

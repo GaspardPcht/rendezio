@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+
 // Modèle Praticien
 const Praticiens = mongoose.model('Praticiens', new mongoose.Schema({
   googleTokens: Object, // Stocke les tokens Google ici
@@ -20,10 +21,18 @@ const oAuth2Client = new google.auth.OAuth2(
  * 1. Route : Démarrer l'authentification Google
  * ==================== */
 router.get('/auth/google', (req, res) => {
+  const praticienId = req.query.praticienId;
+
+  if (!praticienId) {
+    return res.status(400).send('ID du praticien requis.');
+  }
+
   const url = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: ['https://www.googleapis.com/auth/calendar'],
+    state: JSON.stringify({ praticienId }), // Transmettre l'ID dans le paramètre `state`
   });
+
   res.redirect(url);
 });
 
@@ -33,27 +42,30 @@ router.get('/auth/google', (req, res) => {
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const code = req.query.code;
+    const state = req.query.state ? JSON.parse(req.query.state) : {}; // Décoder le state
+    const praticienId = state.praticienId; // Extraire l'ID du praticien
+
     if (!code) {
       return res.status(400).send('Code d’autorisation manquant');
     }
 
+    if (!praticienId) {
+      return res.status(400).send('ID du praticien manquant');
+    }
+
     // Obtenir les tokens Google
     const { tokens } = await oAuth2Client.getToken(code);
-    console.log('Tokens reçus de Google :', tokens);
-
-    // ID du praticien à mettre à jour
-    const praticienId = '675071ebda842be512fb980d';
 
     // Vérifiez si le praticien existe
     const praticien = await Praticiens.findById(praticienId);
     if (!praticien) {
-      console.error('Praticien introuvable avec l\'ID :', praticienId);
+      console.error(`Praticien introuvable avec l'ID : ${praticienId}`);
       return res.status(404).send('Praticien introuvable.');
     }
 
     // Ajouter les googleTokens au praticien existant
     praticien.googleTokens = tokens;
-    await praticien.save(); // Sauvegarder le document mis à jour
+    await praticien.save();
 
     res.redirect('http://localhost:3001/admin/dashboard');
   } catch (error) {
@@ -90,7 +102,6 @@ router.post('/create-appointment', async (req, res) => {
     try {
       await oAuth2Client.getAccessToken();
     } catch (error) {
-      console.log('Rafraîchissement des tokens...');
       const newTokens = await oAuth2Client.refreshAccessToken();
       oAuth2Client.setCredentials(newTokens.credentials);
 
@@ -133,6 +144,7 @@ router.post('/create-appointment', async (req, res) => {
 router.get('/upcoming-appointments', async (req, res) => {
   try {
     const { praticienId } = req.query;
+ 
 
     const praticien = await Praticiens.findById(praticienId);
     if (!praticien) {
@@ -168,7 +180,7 @@ router.get('/upcoming-appointments', async (req, res) => {
 router.get('/check-google-connection', async (req, res) => {
   try {
     const { praticienId } = req.query;
-
+    console.log('praticienId', praticienId);
     if (!praticienId) {
       return res.status(400).json({ error: 'ID du praticien requis.' });
     }
@@ -180,10 +192,10 @@ router.get('/check-google-connection', async (req, res) => {
     }
 
     const tokens = praticien.googleTokens;
-    console.log('tokens bro',tokens)
 
+console.log('tokens', tokens)
     // Vérifiez si les tokens Google sont présents
-    if (!tokens || !tokens.access_token) {
+    if (!tokens) {
       return res.status(200).json({ connected: false });
     }
 

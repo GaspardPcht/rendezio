@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type PractitionerState = {
   token: string | null;
-  id: string | null; // Ajoute l'ID du praticien
+  id: string | null;
 };
 
 const initialState: PractitionerState = {

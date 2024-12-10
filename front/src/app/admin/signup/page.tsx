@@ -103,7 +103,8 @@ export default function CreatePractitionerForm() {
       }
 
       const data = await response.json();
-      const { token, id } = data.praticien;
+      const { token, id } = data;
+      console.log('id', id)
 
       dispatch(setToken(token));
       dispatch(setId(id));

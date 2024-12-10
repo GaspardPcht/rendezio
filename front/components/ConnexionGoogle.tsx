@@ -1,10 +1,16 @@
 'use client';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+
 
 export default function ConnexionGoogle() {
+
+  const praticienId = useSelector((state: RootState) => state.practitioner.id);
+
   const handleGoogleConnect = () => {
     // Redirige vers la route d'authentification Google
-    window.location.href = 'http://localhost:3000/calendar/auth/google';
+    window.location.href = `http://localhost:3000/calendar/auth/google?praticienId=${praticienId}`;
   };
 
   return (

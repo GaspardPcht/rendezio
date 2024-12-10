@@ -27,12 +27,14 @@ export default function AdminLogin() {
       });
 
       const data = await response.json();
-
+console.log('data', data)
       if (!response.ok) {
         throw new Error(data.message || 'Erreur lors de la connexion.');
       }
 
-      const { token, id } = data.praticien; // Assurez-vous que l'API renvoie un ID et un token
+      const { token, id } = data.praticien;
+     
+      console.log('id', id)
 
       dispatch(setToken(token));
       dispatch(setId(id));

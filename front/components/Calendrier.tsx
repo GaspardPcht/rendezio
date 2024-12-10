@@ -35,9 +35,9 @@ export default function ModernCalendar() {
     }
   };
 
-  // useEffect(() => {
-  //   fetchEvents();
-  // }, []);
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   const handleEventClick = (info: any) => {
     alert(`Événement : ${info.event.title}\nDébut : ${info.event.start}\nFin : ${info.event.end}`);
