@@ -28,9 +28,10 @@ router.get('/auth/google', (req, res) => {
   }
 
   const url = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
+    access_type: 'offline', // Nécessaire pour obtenir un refresh token
+    prompt: 'consent', // Force le consentement pour obtenir un nouveau refresh token
     scope: ['https://www.googleapis.com/auth/calendar'],
-    state: JSON.stringify({ praticienId }), // Transmettre l'ID dans le paramètre `state`
+    state: JSON.stringify({ praticienId }),
   });
 
   res.redirect(url);
@@ -42,8 +43,8 @@ router.get('/auth/google', (req, res) => {
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const code = req.query.code;
-    const state = req.query.state ? JSON.parse(req.query.state) : {}; // Décoder le state
-    const praticienId = state.praticienId; // Extraire l'ID du praticien
+    const state = req.query.state ? JSON.parse(req.query.state) : {};
+    const praticienId = state.praticienId;
 
     if (!code) {
       return res.status(400).send('Code d’autorisation manquant');
@@ -53,17 +54,16 @@ router.get('/auth/google/callback', async (req, res) => {
       return res.status(400).send('ID du praticien manquant');
     }
 
-    // Obtenir les tokens Google
+    // Obtenez les tokens de Google
     const { tokens } = await oAuth2Client.getToken(code);
 
     // Vérifiez si le praticien existe
     const praticien = await Praticiens.findById(praticienId);
     if (!praticien) {
-      console.error(`Praticien introuvable avec l'ID : ${praticienId}`);
       return res.status(404).send('Praticien introuvable.');
     }
 
-    // Ajouter les googleTokens au praticien existant
+    // Sauvegardez les tokens, incluant le refresh_token
     praticien.googleTokens = tokens;
     await praticien.save();
 
@@ -180,12 +180,11 @@ router.get('/upcoming-appointments', async (req, res) => {
 router.get('/check-google-connection', async (req, res) => {
   try {
     const { praticienId } = req.query;
-    console.log('praticienId', praticienId);
+
     if (!praticienId) {
       return res.status(400).json({ error: 'ID du praticien requis.' });
     }
 
-    // Vérifiez si le praticien existe
     const praticien = await Praticiens.findById(praticienId);
     if (!praticien) {
       return res.status(404).json({ error: 'Praticien non trouvé.' });
@@ -193,22 +192,35 @@ router.get('/check-google-connection', async (req, res) => {
 
     const tokens = praticien.googleTokens;
 
-console.log('tokens', tokens)
-    // Vérifiez si les tokens Google sont présents
-    if (!tokens) {
+    if (!tokens || !tokens.access_token) {
+      console.error('Tokens absents ou incomplets.');
       return res.status(200).json({ connected: false });
     }
 
-    // Configurez l'OAuth2Client avec les tokens
     oAuth2Client.setCredentials(tokens);
 
-    // Testez l'accès à Google Calendar
+    // Testez les tokens ou rafraîchissez-les si nécessaire
     try {
       await oAuth2Client.getAccessToken();
       return res.status(200).json({ connected: true });
     } catch (error) {
-      console.error('Erreur lors de la vérification des tokens :', error);
-      return res.status(200).json({ connected: false });
+      console.log('Tentative de rafraîchissement des tokens...');
+      if (tokens.refresh_token) {
+        const newTokens = await oAuth2Client.refreshAccessToken();
+        oAuth2Client.setCredentials(newTokens.credentials);
+
+        praticien.googleTokens = {
+          ...praticien.googleTokens,
+          access_token: newTokens.credentials.access_token,
+          expiry_date: newTokens.credentials.expiry_date,
+        };
+
+        await praticien.save();
+        return res.status(200).json({ connected: true });
+      } else {
+        console.error('Refresh token manquant ou invalide.');
+        return res.status(200).json({ connected: false });
+      }
     }
   } catch (error) {
     console.error('Erreur lors de la vérification de la connexion Google :', error);
