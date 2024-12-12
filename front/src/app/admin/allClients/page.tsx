@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { RootState } from '../../../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../../../reducers/praticien';
-import { ST } from 'next/dist/shared/lib/utils';
+
 interface User {
   _id: string;
   firstName: string;
@@ -13,17 +13,14 @@ interface User {
   phoneNumber?: string;
 }
 
-interface ViewClientsProps {
-  practitionerEmail: string;
-}
-
-const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
+const ViewClients: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.practitioner.token);
+  const practitionerId = useSelector((state: RootState) => state.practitioner.id);
 
   useEffect(() => {
     if (!token) {
@@ -35,17 +32,18 @@ const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
     }
   }, [token, router, dispatch]);
 
-  const fetchAllUsersForPractitioner = async (
-    email: string
-  ): Promise<User[]> => {
+  const fetchAllUsersForPractitioner = async (): Promise<User[]> => {
     try {
-      const response = await fetch('http://localhost:3000/praticien/AllUsers', {
-        method: 'GET',
-        headers: {
-          Authorization: `cl@cl.com`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3000/praticien/AllUsers?practitionerId=${practitionerId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`);
@@ -53,13 +51,13 @@ const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
 
       const data = await response.json();
       console.log('Utilisateurs associés :', data.users);
-      return data.users; // Retourne les utilisateurs pour un traitement ultérieur
+      return data.users;
     } catch (err: any) {
       console.error(
         'Erreur lors de la récupération des utilisateurs :',
         err.message
       );
-      throw err; // Relance l'erreur pour la gestion dans l'appelant
+      throw err;
     }
   };
 
@@ -67,18 +65,17 @@ const ViewClients: React.FC<ViewClientsProps> = ({ practitionerEmail }) => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const fetchedUsers =
-          await fetchAllUsersForPractitioner(practitionerEmail);
-        setUsers(fetchedUsers); // Stocker les utilisateurs dans l'état
+        const fetchedUsers = await fetchAllUsersForPractitioner();
+        setUsers(fetchedUsers);
       } catch (err: any) {
-        setError(err.message); // Stocker le message d'erreur
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, [practitionerEmail]);
+  }, [practitionerId, token]);
 
   if (loading) {
     return <p className="text-gray-600">Chargement des utilisateurs...</p>;

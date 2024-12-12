@@ -148,11 +148,18 @@ router.get('/infos', verifyToken, async (req, res) => {
 // Route pour récupérer les utilisateurs associés à un praticien
 router.get('/AllUsers', verifyToken, async (req, res) => {
   try {
-    const users = await User.find({ praticien: req.praticien._id }).select('-password');
+    const { practitionerId } = req.query;
+
+    if (!practitionerId) {
+      return res.status(400).json({ message: 'ID du praticien requis.' });
+    }
+
+    const users = await User.find({ practitioner: practitionerId }).select(
+      '-password'
+    );
 
     res.status(200).json({
       message: 'Utilisateurs associés récupérés avec succès.',
-      praticien: req.praticien.name,
       users,
     });
   } catch (err) {

@@ -89,6 +89,7 @@ export default function Dashboard() {
 
         {/* Colonne centrale */}
         <div className="flex-1 bg-white shadow-lg rounded-lg p-6 max-w-[900px]">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Calendrier</h2>
           {isGoogleConnected === null ? (
             <p className="text-gray-700 text-center">Chargement...</p>
           ) : isGoogleConnected ? (
@@ -110,7 +111,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-gray-800">Mes clients</h2>
             <p className="text-gray-600 mt-2">Voir la totalité de mes clients.</p>
             <div className="mt-4">
-              <Button text="Lire les avis" onClick={() => router.push('/admin/allClients')} />
+              <Button text="Voir mes clients" onClick={() => router.push('/admin/allClients')} />
             </div>
           </div>
         </div>

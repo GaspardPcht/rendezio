@@ -4,7 +4,6 @@ import React from 'react';
 
 export default function ClientLogin() {
   const handleLogin = () => {
-    // Ajoute ici la logique de connexion client
     alert('Connexion client');
   };
 

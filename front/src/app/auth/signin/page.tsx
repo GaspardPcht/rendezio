@@ -27,7 +27,7 @@ export default function Signin() {
       console.log('Signin successful:', data);
 
       // Redirige vers la page d'accueil ou une autre page
-      router.push('/dashboard');
+      router.push('/client/dashboard');
       return data;
     } catch (error) {
       console.error('Error:', error);

@@ -48,7 +48,7 @@ export default function Signup() {
         password: "",
         phoneNumber: "",
       });
-      router.push('/dashboard');
+      router.push('/client/dashboard');
     } catch (error: any) {
       setMessage(error.message);
     } finally {
