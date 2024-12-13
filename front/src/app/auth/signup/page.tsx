@@ -1,6 +1,10 @@
 'use client'
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import ConnexionGoogleClients from "../../../../components/ConnexionGoogleClients";
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../../../reducers/user';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -14,6 +18,8 @@ export default function Signup() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const dispatch = useDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,6 +54,9 @@ export default function Signup() {
         password: "",
         phoneNumber: "",
       });
+      dispatch(
+        setUser({ email: data.user.email, name: data.user.firstName, token: data.user.token })
+      );
       router.push('/client/dashboard');
     } catch (error: any) {
       setMessage(error.message);
@@ -58,9 +67,12 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-4 text-black text-center">S'inscrire</h2>
-        {message && (
+       <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
+        <Image src={'/Logo/logo.png'} alt="logo" width={50} height={50} />
+        <h2 className="text-2xl font-bold mb-4 text-black text-center">
+          S'inscrire
+        </h2>
+-        {message && (
           <p className={`text-center mb-4 ${message.includes("réussie") ? "text-green-500" : "text-red-500"}`}>
             {message}
           </p>
@@ -142,6 +154,7 @@ export default function Signup() {
             />
           </div>
      
+            <ConnexionGoogleClients />
           <div>
             <button
               type="submit"

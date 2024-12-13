@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Button from '../../../../components/Button';
+import ConnexionGoogleClients from '../../../../components/ConnexionGoogleClients';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../../../reducers/user';
 
 export default function Signin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-
+  const dispatch = useDispatch();
   const checkSignin = async () => {
     try {
       const response = await fetch('http://localhost:3000/users/signin', {
@@ -26,7 +29,9 @@ export default function Signin() {
       const data = await response.json();
       console.log('Signin successful:', data);
 
-      // Redirige vers la page d'accueil ou une autre page
+      dispatch(
+        setUser({ email: data.user.email, name: data.user.firstName, token: data.user.token })
+      );
       router.push('/client/dashboard');
       return data;
     } catch (error) {
@@ -98,6 +103,7 @@ export default function Signin() {
           <div>
             <Button text="Se connecter" />
           </div>
+          <ConnexionGoogleClients />
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
           Vous n'avez pas de compte ?{' '}

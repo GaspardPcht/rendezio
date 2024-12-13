@@ -2,8 +2,15 @@
 import React from 'react';
 import Button from '../../../../components/Button';
 import ConnexionGoogleClients from '../../../../components/ConnexionGoogleClients';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store/store';
 
 export default function ClientDashboard() {
+  const user = useSelector((state: RootState) => state.user);
+  console.log('user', user);
+  const token = user.token;
+  console.log('token', token);
+  
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* En-tête */}

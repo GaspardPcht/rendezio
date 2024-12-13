@@ -3,12 +3,13 @@ const { google } = require('googleapis');
 const bcrypt = require('bcrypt');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
-const Praticien = require('../models/Praticien')
+const Praticien = require('../models/Praticien');
 
 const router = express.Router();
 
 router.post('/signup', async (req, res) => {
-  const { firstName, lastName, email, password, phoneNumber, timeZone } = req.body;
+  const { firstName, lastName, email, password, phoneNumber, timeZone } =
+    req.body;
 
   try {
     // Vérifie si l'email existe déjà
@@ -54,7 +55,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-
 // Route pour se connecter
 router.post('/signin', async (req, res) => {
   const { email, password } = req.body;
@@ -84,7 +84,6 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-
 // Route pour associer un utilisateur à un praticien
 router.post('/associate-pratitien', async (req, res) => {
   const { userId, practitionerEmail } = req.body;
@@ -99,11 +98,13 @@ router.post('/associate-pratitien', async (req, res) => {
     // Vérifie si le praticien existe
     const practitioner = await Praticien.findOne({ email: practitionerEmail });
     if (!practitioner) {
-      return res.status(404).json({ message: 'Praticien introuvable avec cet email.' });
+      return res
+        .status(404)
+        .json({ message: 'Praticien introuvable avec cet email.' });
     }
 
     // Associe l'utilisateur au praticien
-    user.practitioner = practitioner._id; 
+    user.practitioner = practitioner._id;
     await user.save();
 
     res.status(200).json({
@@ -128,26 +129,79 @@ router.get('/auth/google', (req, res) => {
   const url = clientOAuth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
-    scope: ['https://www.googleapis.com/auth/calendar'],
+    scope: [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+    ],
   });
 
   res.redirect(url);
 });
 
 router.get('/auth/google/callback', async (req, res) => {
-  const { code } = req.query;
-
-  if (!code) {
-    return res.status(400).json({ message: 'Code d’autorisation manquant.' });
-  }
-
   try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ message: 'Code d’autorisation manquant.' });
+    }
+
     const { tokens } = await clientOAuth2Client.getToken(code);
     clientOAuth2Client.setCredentials(tokens);
 
-    res.redirect('http://localhost:3001/client/dashboard');
+    const oauth2 = google.oauth2({
+      auth: clientOAuth2Client,
+      version: 'v2',
+    });
+
+    const { data } = await oauth2.userinfo.get();
+
+    if (!data.email) {
+      return res
+        .status(400)
+        .json({
+          message: 'Impossible de récupérer les informations utilisateur.',
+        });
+    }
+
+    let user = await User.findOne({ email: data.email });
+
+    if (!user) {
+      user = new User({
+        firstName: data.given_name,
+        lastName: data.family_name || '',
+        email: data.email,
+        avatar: data.picture,
+        googleId: data.id,
+        token: tokens.access_token,
+      });
+      await user.save();
+    } else {
+      user.token = tokens.access_token;
+      await user.save();
+    }
+
+    // Renvoyer les données utilisateur au frontend
+    res.status(200).json({
+      message: 'Connexion réussie via Google.',
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        avatar: user.avatar,
+        token: user.token,
+      },
+    });
+    res.redirect('http://localhost:3001/client/dashboard')
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de la récupération des tokens.', error: error.message });
+    console.error('Erreur lors de la connexion Google :', error);
+    res
+      .status(500)
+      .json({
+        message: 'Erreur lors de la connexion Google.',
+        error: error.message,
+      });
   }
 });
 
