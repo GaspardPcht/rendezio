@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TiltCard from '../../components/TiltCards';
-
+import Image from 'next/image';
 export default function Home() {
   const router = useRouter();
   const handleConnection = () => {
@@ -41,15 +41,27 @@ export default function Home() {
           </button>
         </nav>
       </header>
-      
+
       {/* Main Content */}
       <div className="flex-1 relative">
-        <div className="absolute top-1/3 left-20 space-y-6">
-          <h1 className="text-8xl text-[#00263B] font-roboto font-extrabold">BookSafe</h1>
-          <h1 className="text-8xl text-[#00263B] font-roboto font-extrabold">BookNow</h1>
+        <div className="absolute top-1/3 left-32 space-y-6">
+          <h1 className="text-8xl text-[#00263B] font-roboto font-extrabold">
+            BookSafe
+          </h1>
+          <h1 className="text-8xl text-[#00263B] font-roboto font-extrabold">
+            BookNow
+          </h1>
         </div>
-        <div className="flex justify-center items-center text-black w-full h-full">
-          <TiltCard />
+        <div className="flex-1 flex justify-center items-center">
+          <div className="absolute top-1/3 right-20 space-y-6">
+            <Image src="/calendar.png" alt="Image de RDV" width={200} height={200} />
+          </div>
+          <div className="absolute top-[60%] right-80 space-y-6">
+            <Image src="/rdv.png" alt="Image de RDV" width={200} height={200} />
+          </div>
+          <div className="absolute top-[20%] right-80 space-y-6">
+            <Image src="/rdv.png" alt="Image de RDV" width={200} height={200} />
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Button from '../../../../components/Button';
+import ConnexionGoogleClients from '../../../../components/ConnexionGoogleClients';
 
 export default function ClientDashboard() {
   return (
@@ -79,6 +80,21 @@ export default function ClientDashboard() {
         {/* Colonne droite */}
         <div className="w-full lg:w-1/4 space-y-6">
           {/* Carte : Informations personnelles */}
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Prendre rendez-vous
+            </h2>
+            <p className="text-gray-600 mt-2">
+             Prendre RDV avec un praticien
+            </p>
+            <div className="mt-4">
+              <Button
+                text="Prendre rendez-vous"
+                onClick={() => alert('Informations')}
+              />
+              <ConnexionGoogleClients />
+            </div>
+          </div>
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-800">
               Mes informations

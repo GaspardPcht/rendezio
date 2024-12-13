@@ -1,4 +1,5 @@
 const express = require('express');
+const { google } = require('googleapis');
 const bcrypt = require('bcrypt');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
@@ -117,5 +118,37 @@ router.post('/associate-pratitien', async (req, res) => {
   }
 });
 
+const clientOAuth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID_CLIENTS,
+  process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
+  process.env.GOOGLE_REDIRECT_URI_CLIENTS
+);
+
+router.get('/auth/google', (req, res) => {
+  const url = clientOAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    prompt: 'consent',
+    scope: ['https://www.googleapis.com/auth/calendar'],
+  });
+
+  res.redirect(url);
+});
+
+router.get('/auth/google/callback', async (req, res) => {
+  const { code } = req.query;
+
+  if (!code) {
+    return res.status(400).json({ message: 'Code d’autorisation manquant.' });
+  }
+
+  try {
+    const { tokens } = await clientOAuth2Client.getToken(code);
+    clientOAuth2Client.setCredentials(tokens);
+
+    res.redirect('http://localhost:3001/client/dashboard');
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la récupération des tokens.', error: error.message });
+  }
+});
 
 module.exports = router;
