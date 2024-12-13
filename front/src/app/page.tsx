@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TiltCard from '../../components/TiltCards';
+
 export default function Home() {
   const router = useRouter();
   const handleConnection = () => {
@@ -13,7 +14,8 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="relative bg-white min-h-screen flex flex-col">
+      {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 border-b">
         {/* Logo */}
         <div className="text-2xl font-bold">
@@ -39,12 +41,15 @@ export default function Home() {
           </button>
         </nav>
       </header>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <div className="flex items-center justify-center space-x-8 w-full">
-          <h1 className="text-6xl text-[#00263B] font-bold">BookSafe BookNow</h1>
-          <div className="flex text-black">
-            <TiltCard />
-          </div>
+      
+      {/* Main Content */}
+      <div className="flex-1 relative">
+        <div className="absolute top-1/3 left-20 space-y-6">
+          <h1 className="text-8xl text-[#00263B] font-roboto font-extrabold">BookSafe</h1>
+          <h1 className="text-8xl text-[#00263B] font-roboto font-extrabold">BookNow</h1>
+        </div>
+        <div className="flex justify-center items-center text-black w-full h-full">
+          <TiltCard />
         </div>
       </div>
     </div>
