@@ -7,16 +7,14 @@ import { RootState } from '../../../../store/store';
 
 export default function ClientDashboard() {
   const user = useSelector((state: RootState) => state.user);
-  console.log('user', user);
-  const token = user.token;
-  console.log('token', token);
+
   
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* En-tête */}
       <header className="bg-white shadow-md p-4 mb-6 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800">
-          Tableau de bord Client
+          Tableau de bord de  {user.name}
         </h1>
         <p className="text-gray-600">
           Gérez vos rendez-vous et vos informations personnelles.
@@ -99,7 +97,7 @@ export default function ClientDashboard() {
                 text="Prendre rendez-vous"
                 onClick={() => alert('Informations')}
               />
-              <ConnexionGoogleClients />
+
             </div>
           </div>
           <div className="bg-white shadow-md rounded-lg p-6">

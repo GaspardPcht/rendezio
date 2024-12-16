@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
 const Praticien = require('../models/Praticien');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -139,15 +140,19 @@ router.get('/auth/google', (req, res) => {
   res.redirect(url);
 });
 
+
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const { code } = req.query;
+    console.log("Code reçu :", code); // Vérifier si le code OAuth est bien reçu
 
     if (!code) {
       return res.status(400).json({ message: 'Code d’autorisation manquant.' });
     }
 
     const { tokens } = await clientOAuth2Client.getToken(code);
+    console.log("Tokens reçus :", tokens); // Vérifier les tokens OAuth
+
     clientOAuth2Client.setCredentials(tokens);
 
     const oauth2 = google.oauth2({
@@ -156,16 +161,16 @@ router.get('/auth/google/callback', async (req, res) => {
     });
 
     const { data } = await oauth2.userinfo.get();
+    console.log("Données utilisateur Google :", data); // Vérifier les infos utilisateur reçues
 
     if (!data.email) {
       return res
         .status(400)
-        .json({
-          message: 'Impossible de récupérer les informations utilisateur.',
-        });
+        .json({ message: 'Impossible de récupérer les informations utilisateur.' });
     }
 
     let user = await User.findOne({ email: data.email });
+    console.log("Utilisateur trouvé dans la base :", user);
 
     if (!user) {
       user = new User({
@@ -177,31 +182,34 @@ router.get('/auth/google/callback', async (req, res) => {
         token: tokens.access_token,
       });
       await user.save();
+      console.log("Nouvel utilisateur créé :", user);
     } else {
       user.token = tokens.access_token;
       await user.save();
+      console.log("Utilisateur mis à jour :", user);
     }
 
-    // Renvoyer les données utilisateur au frontend
-    res.status(200).json({
-      message: 'Connexion réussie via Google.',
-      user: {
+    // Générer un JWT pour l'utilisateur
+    const jwtToken = jwt.sign(
+      {
         id: user._id,
         email: user.email,
         firstName: user.firstName,
         avatar: user.avatar,
-        token: user.token,
       },
-    });
-    res.redirect('http://localhost:3001/client/dashboard')
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    console.log("JWT généré :", jwtToken); // Vérifier le contenu du JWT
+
+    // Redirection vers le frontend avec le token dans l'URL
+    res.redirect(`http://localhost:3001/client/dashboard?token=${jwtToken}`);
   } catch (error) {
     console.error('Erreur lors de la connexion Google :', error);
-    res
-      .status(500)
-      .json({
-        message: 'Erreur lors de la connexion Google.',
-        error: error.message,
-      });
+    res.status(500).json({
+      message: 'Erreur lors de la connexion Google.',
+      error: error.message,
+    });
   }
 });
 
