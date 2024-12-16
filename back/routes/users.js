@@ -144,15 +144,12 @@ router.get('/auth/google', (req, res) => {
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const { code } = req.query;
-    console.log("Code reçu :", code); // Vérifier si le code OAuth est bien reçu
 
     if (!code) {
       return res.status(400).json({ message: 'Code d’autorisation manquant.' });
     }
 
     const { tokens } = await clientOAuth2Client.getToken(code);
-    console.log("Tokens reçus :", tokens); // Vérifier les tokens OAuth
-
     clientOAuth2Client.setCredentials(tokens);
 
     const oauth2 = google.oauth2({
@@ -161,7 +158,6 @@ router.get('/auth/google/callback', async (req, res) => {
     });
 
     const { data } = await oauth2.userinfo.get();
-    console.log("Données utilisateur Google :", data); // Vérifier les infos utilisateur reçues
 
     if (!data.email) {
       return res
@@ -170,7 +166,6 @@ router.get('/auth/google/callback', async (req, res) => {
     }
 
     let user = await User.findOne({ email: data.email });
-    console.log("Utilisateur trouvé dans la base :", user);
 
     if (!user) {
       user = new User({
@@ -182,11 +177,9 @@ router.get('/auth/google/callback', async (req, res) => {
         token: tokens.access_token,
       });
       await user.save();
-      console.log("Nouvel utilisateur créé :", user);
     } else {
       user.token = tokens.access_token;
       await user.save();
-      console.log("Utilisateur mis à jour :", user);
     }
 
     // Générer un JWT pour l'utilisateur
@@ -198,9 +191,8 @@ router.get('/auth/google/callback', async (req, res) => {
         avatar: user.avatar,
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '1h' } 
     );
-    console.log("JWT généré :", jwtToken); // Vérifier le contenu du JWT
 
     // Redirection vers le frontend avec le token dans l'URL
     res.redirect(`http://localhost:3001/client/dashboard?token=${jwtToken}`);

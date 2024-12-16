@@ -8,7 +8,7 @@ export default function ConnexionGoogleClients() {
   const dispatch = useDispatch();
 
   // Fonction native pour décoder un JWT
-  const decodeJwt = (token : any) => {
+  const decodeJwt = (token: any) => {
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -26,30 +26,23 @@ export default function ConnexionGoogleClients() {
   };
 
   const handleGoogleConnect = () => {
+    // Redirige l'utilisateur vers la route d'authentification Google
     window.location.href = 'http://localhost:3000/users/auth/google';
   };
 
-
   useEffect(() => {
+    // Récupérer le token dans l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-  
-    console.log("Token reçu :", token);
-  
+
     if (token) {
-      const userInfo = decodeJwt(token); // Décodage du token JWT
-      console.log("User Info décodé :", userInfo);
-  
+      const userInfo = decodeJwt(token);
       if (userInfo) {
-        dispatch(
-          setUser({
-            email: userInfo.email || null,
-            name: userInfo.firstName || null, 
-            token: token, 
-          })
-        );
+        console.log('User Info:', userInfo);
+        // Dispatch dans Redux
+        dispatch(setUser(userInfo));
       }
-  
+
       // Nettoyer l'URL pour retirer le token
       window.history.replaceState({}, document.title, '/dashboard');
     }

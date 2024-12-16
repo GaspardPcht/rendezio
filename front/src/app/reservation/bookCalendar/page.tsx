@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store/store';
 
 export default function AddBook() {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -12,7 +14,10 @@ export default function AddBook() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const user = useSelector((state: RootState) => state.user);
+  console.log('user', user);
   const handleSubmit = async (e: React.FormEvent) => {
+     
     e.preventDefault();
     if (!startDate) {
       alert('Veuillez sélectionner une date et une heure pour le rendez-vous.');
@@ -30,23 +35,26 @@ export default function AddBook() {
 
     setLoading(true);
 
-    const response = await fetch('http://localhost:3000/calendar/create-appointment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        praticienId: '675071ebda842be512fb980d',
-        title: `Consultation avec ${name} ${surname}`,
-        description: `Consultation avec le patient ${name} ${surname}`,
-        startTime: startDate.toISOString(),
-        endTime: endDate.toISOString(),
-        client: {
-          name,
-          surname,
-          phone,
-          email,
-        },
-      }),
-    });
+    const response = await fetch(
+      'http://localhost:3000/calendar/create-appointment',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          praticienId: '675878d0898a8c201f75e33c', // ID EN DURE ATTENTION A CHANGER
+          title: `Consultation avec ${name} ${surname}`,
+          description: `Consultation avec le patient ${name} ${surname}`,
+          startTime: startDate.toISOString(),
+          endTime: endDate.toISOString(),
+          client: {
+            name,
+            surname,
+            phone,
+            email,
+          },
+        }),
+      }
+    );
 
     setLoading(false);
 
@@ -65,13 +73,17 @@ export default function AddBook() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-700">Prendre un Rendez-vous</h1>
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-700">
+          Prendre un Rendez-vous
+        </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">Nom :</label>
+            <label className="block text-gray-600 font-medium mb-2">
+              Nom :
+            </label>
             <input
               type="text"
-              value={name}
+              value={user.name || ''}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre nom"
@@ -80,7 +92,9 @@ export default function AddBook() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">Prénom :</label>
+            <label className="block text-gray-600 font-medium mb-2">
+              Prénom :
+            </label>
             <input
               type="text"
               value={surname}
@@ -92,7 +106,9 @@ export default function AddBook() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">Numéro de téléphone :</label>
+            <label className="block text-gray-600 font-medium mb-2">
+              Numéro de téléphone :
+            </label>
             <input
               type="tel"
               value={phone}
@@ -104,10 +120,12 @@ export default function AddBook() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">Adresse e-mail :</label>
+            <label className="block text-gray-600 font-medium mb-2">
+              Adresse e-mail :
+            </label>
             <input
               type="email"
-              value={email}
+              value={user.email || ''}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre adresse e-mail"
@@ -116,7 +134,9 @@ export default function AddBook() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">Date et heure de début :</label>
+            <label className="block text-gray-600 font-medium mb-2">
+              Date et heure de début :
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}

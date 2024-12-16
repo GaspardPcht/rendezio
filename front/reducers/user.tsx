@@ -1,13 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Définir le type pour l'état utilisateur
 export type UserState = {
-  email: string | null;
-  name: string | null;
-  token: string | null;
+  email: string | null; // Email peut être null
+  name: string | null;  // Nom peut être null
+  token: string | null; // Token peut être null
 };
 
-// Définir l'état initial
 const initialState: UserState = {
   email: null,
   name: null,
@@ -20,13 +18,15 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (
       state,
-      action: PayloadAction<{ email: string; name: string; token: string }>
+      action: PayloadAction<{ email: string | null; name: string | null; token: string | null }>
     ) => {
+      console.log('Payload reçu dans Redux :', action.payload);
       state.email = action.payload.email;
       state.name = action.payload.name;
       state.token = action.payload.token;
     },
     resetUser: (state) => {
+      console.log('Reset utilisateur');
       state.email = null;
       state.name = null;
       state.token = null;

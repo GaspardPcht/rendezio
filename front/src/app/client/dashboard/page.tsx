@@ -4,9 +4,12 @@ import Button from '../../../../components/Button';
 import ConnexionGoogleClients from '../../../../components/ConnexionGoogleClients';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
+import { useRouter } from 'next/navigation';
 
 export default function ClientDashboard() {
   const user = useSelector((state: RootState) => state.user);
+  console.log('userFromDashboard', user);
+  const router = useRouter();
 
   
   return (
@@ -95,7 +98,7 @@ export default function ClientDashboard() {
             <div className="mt-4">
               <Button
                 text="Prendre rendez-vous"
-                onClick={() => alert('Informations')}
+                onClick={() => router.push('/reservation/bookCalendar')}
               />
 
             </div>
