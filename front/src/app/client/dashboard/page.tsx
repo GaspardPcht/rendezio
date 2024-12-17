@@ -5,9 +5,10 @@ import ConnexionGoogleClients from '../../../../components/ConnexionGoogleClient
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../../../../reducers/user';
+import { setUser, resetUser } from '../../../../reducers/user';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
 export default function ClientDashboard() {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
@@ -35,17 +36,22 @@ export default function ClientDashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
+    // Si le token existe dans l'URL
     if (token) {
       const userInfo = decodeJwt(token);
 
       if (userInfo) {
-        dispatch(
-          setUser({
-            email: userInfo?.email || 'unknown@email.com',
-            name: userInfo?.firstName || 'Unknown',
-            token: token,
-          })
-        );
+        const userPayload = {
+          email: userInfo?.email || 'unknown@email.com',
+          name: userInfo?.firstName || 'Unknown',
+          token: token,
+        };
+
+        // Mettre à jour Redux
+        dispatch(setUser(userPayload));
+
+        // Sauvegarder les infos dans localStorage
+        localStorage.setItem('user', JSON.stringify(userPayload));
       } else {
         console.error(
           'Erreur : aucune information utilisateur trouvée dans le JWT.'
@@ -55,20 +61,37 @@ export default function ClientDashboard() {
       // Nettoyer l'URL pour retirer le token
       window.history.replaceState({}, document.title, '/client/dashboard');
     } else {
-      console.warn("Aucun token trouvé dans l'URL.");
+      // Récupérer les informations depuis localStorage si elles existent
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        dispatch(setUser(JSON.parse(savedUser)));
+      } else {
+        console.warn('Aucune information utilisateur trouvée.');
+      }
     }
   }, [dispatch]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    dispatch(resetUser());
+    router.push('/');
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* En-tête */}
-      <header className="bg-white shadow-md p-4 mb-6 rounded-lg">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Tableau de bord de {user.name}
-        </h1>
-        <p className="text-gray-600">
-          Gérez vos rendez-vous et vos informations personnelles.
-        </p>
+      <header className="bg-white shadow-md p-4 mb-6 rounded-lg flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Tableau de bord de {user.name}
+          </h1>
+          <p className="text-gray-600">
+            Gérez vos rendez-vous et vos informations personnelles.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <Button text="Déconnexion" onClick={() => handleLogout()} />
+        </div>
       </header>
 
       {/* Contenu principal */}
