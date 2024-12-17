@@ -1,10 +1,10 @@
 'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
+import { useState, useEffect } from 'react';
 
 export default function AddBook() {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -16,17 +16,26 @@ export default function AddBook() {
 
   const user = useSelector((state: RootState) => state.user);
 
+  // Initialisation des champs avec les données utilisateur
+  useEffect(() => {
+    if (user.name) setName(user.name);
+    if (user.email) setEmail(user.email);
+  }, [user]);
 
-  console.log('user', user);
   const handleSubmit = async (e: React.FormEvent) => {
-     
     e.preventDefault();
+
     if (!startDate) {
       alert('Veuillez sélectionner une date et une heure pour le rendez-vous.');
       return;
     }
 
-    if (!name || !surname || !phone || !email) {
+    if (!name.trim() || !surname.trim() || !phone.trim() || !email.trim()) {
+      console.log('user', user);
+      console.log('name', name);
+      console.log('surname', surname);
+      console.log('phone', phone);
+      console.log('email', email || 'Non fourni');
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
@@ -49,10 +58,10 @@ export default function AddBook() {
           startTime: startDate.toISOString(),
           endTime: endDate.toISOString(),
           client: {
-            name,
-            surname,
-            phone,
-            email,
+            name: name,
+            surname: surname,
+            phone: phone,
+            email: email,
           },
         }),
       }
@@ -80,12 +89,10 @@ export default function AddBook() {
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">
-              Nom :
-            </label>
+            <label className="block text-gray-600 font-medium mb-2">Nom :</label>
             <input
               type="text"
-              value={user.name || ''}
+              value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre nom"
@@ -94,9 +101,7 @@ export default function AddBook() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-600 font-medium mb-2">
-              Prénom :
-            </label>
+            <label className="block text-gray-600 font-medium mb-2">Prénom :</label>
             <input
               type="text"
               value={surname}
@@ -127,7 +132,7 @@ export default function AddBook() {
             </label>
             <input
               type="email"
-              value={user.email || ''}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre adresse e-mail"

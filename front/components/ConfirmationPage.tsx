@@ -16,7 +16,7 @@ export default function ConfirmationPage() {
         </p>
         <button
           className="mt-6 bg-blue-500 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition"
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.location.href = '/client/dashboard'}
         >
           Retour à l'accueil
         </button>

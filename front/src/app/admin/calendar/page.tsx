@@ -15,11 +15,14 @@ interface Appointment {
 }
 
 export default function UpcomingAppointments() {
+  const id = useSelector((state: RootState) => state.practitioner.id);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const praticienId = '675071ebda842be512fb980d'; // ID du praticien (à adapter)
+  const praticienId = id;
   const router = useRouter();
   const dispatch = useDispatch(); // Initialiser le dispatch pour Redux
+
+
 
   const token = useSelector((state: RootState) => state.practitioner.token);
 
