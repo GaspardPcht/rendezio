@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store/store';
 
 export default function AddBook() {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -11,6 +13,8 @@ export default function AddBook() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const user = useSelector((state: RootState) => state.user);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +75,7 @@ export default function AddBook() {
             <label className="block text-gray-600 font-medium mb-2">Nom :</label>
             <input
               type="text"
-              value={name}
+              value={user.name || ''}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre nom"
@@ -107,7 +111,7 @@ export default function AddBook() {
             <label className="block text-gray-600 font-medium mb-2">Adresse e-mail :</label>
             <input
               type="email"
-              value={email}
+              value={user.email || ''}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border text-black rounded-md shadow-sm bg-white focus:ring focus:ring-blue-300 focus:outline-none"
               placeholder="Entrez votre adresse e-mail"

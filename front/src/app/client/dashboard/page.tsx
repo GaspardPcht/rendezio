@@ -7,37 +7,37 @@ import { RootState } from '../../../../store/store';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../../../reducers/user';
 import { useEffect } from 'react';
-
+import { useRouter } from 'next/navigation';
 export default function ClientDashboard() {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
-    // Fonction native pour décoder un JWT
-    const decodeJwt = (token : any) => {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split('')
-            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-        );
-        return JSON.parse(jsonPayload);
-      } catch (error) {
-        console.error('Erreur lors du décodage du JWT :', error);
-        return null;
-      }
-    };
+  const router = useRouter();
+  // Fonction native pour décoder un JWT
+  const decodeJwt = (token: any) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Erreur lors du décodage du JWT :', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    
-  
+
     if (token) {
-      const userInfo = decodeJwt(token); 
-  
+      const userInfo = decodeJwt(token);
+
       if (userInfo) {
         dispatch(
           setUser({
@@ -47,23 +47,24 @@ export default function ClientDashboard() {
           })
         );
       } else {
-        console.error("Erreur : aucune information utilisateur trouvée dans le JWT.");
+        console.error(
+          'Erreur : aucune information utilisateur trouvée dans le JWT.'
+        );
       }
-  
+
       // Nettoyer l'URL pour retirer le token
-      window.history.replaceState({}, document.title, '/dashboard');
+      window.history.replaceState({}, document.title, '/client/dashboard');
     } else {
       console.warn("Aucun token trouvé dans l'URL.");
     }
   }, [dispatch]);
 
-  
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* En-tête */}
       <header className="bg-white shadow-md p-4 mb-6 rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800">
-          Tableau de bord de  {user.name}
+          Tableau de bord de {user.name}
         </h1>
         <p className="text-gray-600">
           Gérez vos rendez-vous et vos informations personnelles.
@@ -138,15 +139,12 @@ export default function ClientDashboard() {
             <h2 className="text-lg font-semibold text-gray-800">
               Prendre rendez-vous
             </h2>
-            <p className="text-gray-600 mt-2">
-             Prendre RDV avec un praticien
-            </p>
+            <p className="text-gray-600 mt-2">Prendre RDV avec un praticien</p>
             <div className="mt-4">
               <Button
                 text="Prendre rendez-vous"
-                onClick={() => alert('Informations')}
+                onClick={() => router.push('/reservation/bookCalendar')}
               />
-
             </div>
           </div>
           <div className="bg-white shadow-md rounded-lg p-6">
