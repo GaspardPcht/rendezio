@@ -4,9 +4,58 @@ import Button from '../../../../components/Button';
 import ConnexionGoogleClients from '../../../../components/ConnexionGoogleClients';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../../../reducers/user';
+import { useEffect } from 'react';
 
 export default function ClientDashboard() {
   const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+
+    // Fonction native pour décoder un JWT
+    const decodeJwt = (token : any) => {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        return JSON.parse(jsonPayload);
+      } catch (error) {
+        console.error('Erreur lors du décodage du JWT :', error);
+        return null;
+      }
+    };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+  
+    if (token) {
+      const userInfo = decodeJwt(token); 
+  
+      if (userInfo) {
+        dispatch(
+          setUser({
+            email: userInfo?.email || 'unknown@email.com',
+            name: userInfo?.firstName || 'Unknown',
+            token: token,
+          })
+        );
+      } else {
+        console.error("Erreur : aucune information utilisateur trouvée dans le JWT.");
+      }
+  
+      // Nettoyer l'URL pour retirer le token
+      window.history.replaceState({}, document.title, '/dashboard');
+    } else {
+      console.warn("Aucun token trouvé dans l'URL.");
+    }
+  }, [dispatch]);
 
   
   return (
