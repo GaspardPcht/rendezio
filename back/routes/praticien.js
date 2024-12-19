@@ -67,12 +67,11 @@ router.post('/create', async (req, res) => {
     });
 
     await newPraticien.save();
+    const praticienId = newPraticien._id;
 
-    res.json({
-      message: 'Praticien créé avec succès.',
-      praticien: newPraticien,
-      id: newPraticien._id,
-      token,
+    // Envoi des informations au frontend
+    return res.redirect({
+      redirectUrl: `http://localhost:3001/admin/dashboard?token=${token}&praticienId=${praticienId}`,
     });
   } catch (error) {
     res.json({

@@ -4,11 +4,13 @@ const router = express.Router();
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-
 // Modèle Praticien
-const Praticiens = mongoose.model('Praticiens', new mongoose.Schema({
-  googleTokens: Object, // Stocke les tokens Google ici
-}));
+const Praticiens = mongoose.model(
+  'Praticiens',
+  new mongoose.Schema({
+    googleTokens: Object, // Stocke les tokens Google ici
+  })
+);
 
 // Initialisation de l'OAuth2Client
 const oAuth2Client = new google.auth.OAuth2(
@@ -42,9 +44,14 @@ router.get('/auth/google', (req, res) => {
  * ==================== */
 router.get('/auth/google/callback', async (req, res) => {
   try {
+    console.log('Callback Google reçu');
+
     const code = req.query.code;
+    console.log("Code d'autorisation :", code);
+
     const state = req.query.state ? JSON.parse(req.query.state) : {};
     const praticienId = state.praticienId;
+    console.log('PraticienId extrait :', praticienId);
 
     if (!code) {
       return res.status(400).send('Code d’autorisation manquant');
@@ -54,20 +61,36 @@ router.get('/auth/google/callback', async (req, res) => {
       return res.status(400).send('ID du praticien manquant');
     }
 
-    // Obtenez les tokens de Google
     const { tokens } = await oAuth2Client.getToken(code);
 
-    // Vérifiez si le praticien existe
-    const praticien = await Praticiens.findById(praticienId);
+    // Récupérer le praticien avec lean pour éviter les soucis Mongoose
+
+    const praticien = await Praticiens.findById(praticienId).lean();
+
     if (!praticien) {
+      console.error('Praticien non trouvé');
       return res.status(404).send('Praticien introuvable.');
     }
 
-    // Sauvegardez les tokens, incluant le refresh_token
-    praticien.googleTokens = tokens;
-    await praticien.save();
+    // Assigner le token UID2
+    const uid2Token = praticien.token;
 
-    res.redirect('http://localhost:3001/admin/dashboard');
+    if (!uid2Token) {
+      return res
+        .status(500)
+        .send('Token UID2 manquant pour ce praticien dans la base de données.');
+    }
+
+    // Mise à jour des tokens Google
+
+    await Praticiens.findByIdAndUpdate(praticienId, {
+      googleTokens: tokens,
+    });
+
+    // Rediriger vers le frontend avec le token UID2
+    const redirectURL = `http://localhost:3001/admin/dashboard?token=${uid2Token}&praticienId=${praticienId}`;
+
+    res.redirect(redirectURL);
   } catch (error) {
     console.error('Erreur lors de la liaison du compte Google :', error);
     res.status(500).send('Erreur lors de la liaison du compte Google.');
@@ -81,12 +104,13 @@ router.post('/create-appointment', async (req, res) => {
   try {
     console.log('Requête reçue :', req.body);
 
-    const { title, description, startTime, endTime, praticienId, client } = req.body;
+    const { title, description, startTime, endTime, praticienId, client } =
+      req.body;
 
     // Vérifiez si le praticien existe
     const praticien = await Praticiens.findById(praticienId);
     if (!praticien) {
-      console.error('Praticien non trouvé avec l\'ID :', praticienId);
+      console.error("Praticien non trouvé avec l'ID :", praticienId);
       return res.status(404).json({ error: 'Praticien non trouvé.' });
     }
 
@@ -137,14 +161,15 @@ router.post('/create-appointment', async (req, res) => {
     });
   } catch (error) {
     console.error('Erreur lors de la création du rendez-vous :', error);
-    res.status(500).json({ error: 'Erreur lors de la création du rendez-vous.' });
+    res
+      .status(500)
+      .json({ error: 'Erreur lors de la création du rendez-vous.' });
   }
 });
 
 router.get('/upcoming-appointments', async (req, res) => {
   try {
     const { praticienId } = req.query;
- 
 
     const praticien = await Praticiens.findById(praticienId);
     if (!praticien) {
@@ -153,7 +178,9 @@ router.get('/upcoming-appointments', async (req, res) => {
 
     const tokens = praticien.googleTokens;
     if (!tokens || !tokens.access_token) {
-      return res.status(400).json({ error: 'Le praticien doit se connecter à Google.' });
+      return res
+        .status(400)
+        .json({ error: 'Le praticien doit se connecter à Google.' });
     }
 
     oAuth2Client.setCredentials(tokens);
@@ -170,7 +197,9 @@ router.get('/upcoming-appointments', async (req, res) => {
     res.status(200).json({ events: response.data.items });
   } catch (error) {
     console.error('Erreur lors de la récupération des rendez-vous :', error);
-    res.status(500).json({ error: 'Erreur lors de la récupération des rendez-vous.' });
+    res
+      .status(500)
+      .json({ error: 'Erreur lors de la récupération des rendez-vous.' });
   }
 });
 
@@ -223,8 +252,13 @@ router.get('/check-google-connection', async (req, res) => {
       }
     }
   } catch (error) {
-    console.error('Erreur lors de la vérification de la connexion Google :', error);
-    res.status(500).json({ error: 'Erreur lors de la vérification de la connexion Google.' });
+    console.error(
+      'Erreur lors de la vérification de la connexion Google :',
+      error
+    );
+    res.status(500).json({
+      error: 'Erreur lors de la vérification de la connexion Google.',
+    });
   }
 });
 
