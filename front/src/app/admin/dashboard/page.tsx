@@ -12,9 +12,14 @@ export default function Dashboard() {
   const token = useSelector((state: RootState) => state.practitioner.token);
   const praticienId = useSelector((state: RootState) => state.practitioner.id);
 
+  console.log('Token :', token);
+  console.log('PraticienId :', praticienId);
   const [isGoogleConnected, setIsGoogleConnected] = useState<boolean | null>(null);
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenn = urlParams.get('token');
+
     const checkGoogleConnection = async () => {
       try {
         const response = await fetch(
@@ -29,6 +34,7 @@ export default function Dashboard() {
 
         const data = await response.json();
 
+        console.log('Data :', data);
         if (response.ok && data.connected) {
           setIsGoogleConnected(true);
         } else {
@@ -40,7 +46,7 @@ export default function Dashboard() {
       }
     };
 
-    if (token && praticienId) {
+    if (token || tokenn) {
       checkGoogleConnection();
     } else {
       console.error('Token ou praticienId manquant');

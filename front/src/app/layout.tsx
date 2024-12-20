@@ -84,7 +84,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${roboto.variable} antialiased`}>
-        {/* Envelopper l'application avec le Provider Redux */}
+        
         <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
