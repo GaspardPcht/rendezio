@@ -24,7 +24,7 @@ const oAuth2Client = new google.auth.OAuth2(
  * ==================== */
 router.get('/auth/google', (req, res) => {
   const praticienId = req.query.praticienId;
-
+  console.log('PraticienId :', praticienId);
   if (!praticienId) {
     return res.status(400).send('ID du praticien requis.');
   }
@@ -57,7 +57,7 @@ router.get('/auth/google/callback', async (req, res) => {
       return res.status(400).send('Code d’autorisation manquant');
     }
 
-    if (!praticienId) {
+    if (!praticienId || praticienId === 'null') {
       return res.status(400).send('ID du praticien manquant');
     }
 
@@ -74,6 +74,7 @@ router.get('/auth/google/callback', async (req, res) => {
 
     // Assigner le token UID2
     const uid2Token = praticien.token;
+    console.log('Token UID2 :', uid2Token);
 
     if (!uid2Token) {
       return res
@@ -89,7 +90,7 @@ router.get('/auth/google/callback', async (req, res) => {
 
     // Rediriger vers le frontend avec le token UID2
     const redirectURL = `http://localhost:3001/admin/dashboard?token=${uid2Token}&praticienId=${praticienId}`;
-
+    console.log('Redirection vers :', redirectURL);
     res.redirect(redirectURL);
   } catch (error) {
     console.error('Erreur lors de la liaison du compte Google :', error);
@@ -209,7 +210,7 @@ router.get('/upcoming-appointments', async (req, res) => {
 router.get('/check-google-connection', async (req, res) => {
   try {
     const { praticienId } = req.query;
-
+    console.log('PraticienId :', praticienId);
     if (!praticienId) {
       return res.status(400).json({ error: 'ID du praticien requis.' });
     }
@@ -218,9 +219,9 @@ router.get('/check-google-connection', async (req, res) => {
     if (!praticien) {
       return res.status(404).json({ error: 'Praticien non trouvé.' });
     }
-
+    console.log('Praticien :', praticien);
     const tokens = praticien.googleTokens;
-
+    console.log('Tokens :', tokens);
     if (!tokens || !tokens.access_token) {
       console.error('Tokens absents ou incomplets.');
       return res.status(200).json({ connected: false });

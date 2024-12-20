@@ -67,11 +67,12 @@ router.post('/create', async (req, res) => {
     });
 
     await newPraticien.save();
-    const praticienId = newPraticien._id;
 
-    // Envoi des informations au frontend
-    return res.redirect({
-      redirectUrl: `http://localhost:3001/admin/dashboard?token=${token}&praticienId=${praticienId}`,
+    res.json({
+      message: 'Praticien créé avec succès.',
+      praticien: newPraticien,
+      id: newPraticien._id,
+      token,
     });
   } catch (error) {
     res.json({
@@ -147,18 +148,11 @@ router.get('/infos', verifyToken, async (req, res) => {
 // Route pour récupérer les utilisateurs associés à un praticien
 router.get('/AllUsers', verifyToken, async (req, res) => {
   try {
-    const { practitionerId } = req.query;
-
-    if (!practitionerId) {
-      return res.status(400).json({ message: 'ID du praticien requis.' });
-    }
-
-    const users = await User.find({ practitioner: practitionerId }).select(
-      '-password'
-    );
+    const users = await User.find({ praticien: req.praticien._id }).select('-password');
 
     res.status(200).json({
       message: 'Utilisateurs associés récupérés avec succès.',
+      praticien: req.praticien.name,
       users,
     });
   } catch (err) {
