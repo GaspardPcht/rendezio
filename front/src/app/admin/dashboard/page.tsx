@@ -52,6 +52,7 @@ export default function Dashboard() {
       console.error('Token ou praticienId manquant');
       router.push('/admin');
     }
+    window.history.replaceState({}, document.title, '/admin/dashboard');
   }, [token, praticienId]);
 
   const handleGoogleConnection = () => {
