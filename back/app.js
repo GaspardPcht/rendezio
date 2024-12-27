@@ -11,7 +11,6 @@ const usersRouter = require('./routes/users');
 const praticienRouter = require('./routes/praticien');
 const calendarRouter = require('./routes/calendar');
 
-
 const app = express();
 
 // Configuration CORS (autorise toutes les origines par défaut)

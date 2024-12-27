@@ -31,11 +31,6 @@ export default function AddBook() {
     }
 
     if (!name.trim() || !surname.trim() || !phone.trim() || !email.trim()) {
-      console.log('user', user);
-      console.log('name', name);
-      console.log('surname', surname);
-      console.log('phone', phone);
-      console.log('email', email || 'Non fourni');
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
@@ -52,7 +47,7 @@ export default function AddBook() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          praticienId: '675878d0898a8c201f75e33c', // ID EN DURE ATTENTION A CHANGER
+          praticienId: '6762e351f4984a7a4a458cc7', // ID EN DURE ATTENTION A CHANGER
           title: `Consultation avec ${name} ${surname}`,
           description: `Consultation avec le patient ${name} ${surname}`,
           startTime: startDate.toISOString(),

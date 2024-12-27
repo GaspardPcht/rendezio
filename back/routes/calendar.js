@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 require('dotenv').config();
+const { sendConfirmationEmail } = require("../utils/emailService");
+const { sendConfirmationSMS } = require("../utils/smsService");
 
 // Modèle Praticien
 const Praticiens = mongoose.model(
@@ -105,8 +107,7 @@ router.post('/create-appointment', async (req, res) => {
   try {
     console.log('Requête reçue :', req.body);
 
-    const { title, description, startTime, endTime, praticienId, client } =
-      req.body;
+    const { title, description, startTime, endTime, praticienId, client } = req.body;
 
     // Vérifiez si le praticien existe
     const praticien = await Praticiens.findById(praticienId);
@@ -142,7 +143,7 @@ router.post('/create-appointment', async (req, res) => {
     // Créer l'événement avec les détails du client
     const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
     const event = {
-      summary: title, // Par exemple : "Consultation avec John Doe"
+      summary: title,
       description: `${description}\n\nInformations du client:\n- Nom: ${client.name} ${client.surname}\n- Téléphone: ${client.phone}\n- Email: ${client.email}`,
       start: { dateTime: startTime, timeZone: 'Europe/Paris' },
       end: { dateTime: endTime, timeZone: 'Europe/Paris' },
@@ -155,9 +156,29 @@ router.post('/create-appointment', async (req, res) => {
 
     console.log('Événement créé :', response.data);
 
+    // Préparer les messages de confirmation
+    const emailMessage = `
+      Bonjour ${client.name},
+
+      Votre rendez-vous a été confirmé avec succès !
+      Détails du rendez-vous :
+      - Titre : ${title}
+      - Description : ${description}
+      - Date : ${new Date(startTime).toLocaleString('fr-FR')}
+      - Heure de fin : ${new Date(endTime).toLocaleString('fr-FR')}
+
+      Merci d'avoir choisi notre service.
+    `;
+
+    const smsMessage = `Bonjour ${client.name}, votre rendez-vous "${title}" est confirmé pour le ${new Date(startTime).toLocaleString('fr-FR')}.`;
+
+    // Envoyer l'e-mail et le SMS
+    await sendConfirmationEmail(client.email, "Confirmation de votre rendez-vous", emailMessage);
+    await sendConfirmationSMS(client.phone, smsMessage);
+
     // Réponse de confirmation
     res.status(201).json({
-      message: 'Rendez-vous créé avec succès dans Google Calendar.',
+      message: 'Rendez-vous créé avec succès dans Google Calendar. Notifications envoyées.',
       data: response.data,
     });
   } catch (error) {
