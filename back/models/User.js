@@ -6,24 +6,29 @@ const userSchema = new mongoose.Schema(
     lastName: { 
       type: String, 
       required: function () {
-        return !this.googleId; // Non requis si `googleId` est présent
-      },
+        return !this.googleId;
+      }
     },
     email: { type: String, required: true, unique: true },
     password: { 
       type: String, 
       required: function () {
-        return !this.googleId; // Non requis si `googleId` est présent
-      },
+        return !this.googleId;
+      }
     },
     phoneNumber: { type: String },
     token: { type: String },
-    practitioner: { type: mongoose.Schema.Types.ObjectId, ref: 'Practitioner' }, 
-    googleId: { type: String, unique: true }, // Ajout d'un champ pour identifier les utilisateurs Google
+    avatar: { type: String },
+    googleId: { 
+      type: String,
+      index: {
+        unique: true,
+        partialFilterExpression: { googleId: { $exists: true, $ne: null } }
+      }
+    }
   },
   {
-    timestamps: true, // Ajoute les champs createdAt et updatedAt
+    timestamps: true
   }
 );
-
 module.exports = mongoose.model('User', userSchema);
