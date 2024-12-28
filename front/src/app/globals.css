@@ -21,5 +21,4 @@ body {
   background: var(--background); /* Couleur de fond selon le thème */
   font-family: var(--font-roboto), sans-serif; /* Utilisation de la police Roboto */
   margin: 0; /* Supprime les marges par défaut */
-  padding: 16px; /* Marges internes uniformes */
 }
