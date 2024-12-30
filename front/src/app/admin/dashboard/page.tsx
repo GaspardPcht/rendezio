@@ -89,7 +89,7 @@ export default function Dashboard() {
               Taux de réservation : <span className="font-bold">85%</span>
             </p>
             <div className="mt-4">
-              <Button text="Voir les détails" onClick={() => alert('Voir les détails')} />
+              <Button text="Voir les détails" onClick={() => alert('Ça arrive pas de panique')} />
             </div>
           </div>
         </div>

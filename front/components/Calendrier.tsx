@@ -1,21 +1,26 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import FullCalendar from '@fullcalendar/react'; // Import FullCalendar
-import dayGridPlugin from '@fullcalendar/daygrid'; // DayGrid View
-import timeGridPlugin from '@fullcalendar/timegrid'; // TimeGrid View
-import interactionPlugin from '@fullcalendar/interaction'; // Drag and Drop
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import { useSelector } from 'react-redux';
+import { Modal } from 'antd'; // Import Ant Design Modal
 import { RootState } from '../store/store';
+import Button from './Button';
 
 export default function ModernCalendar() {
   const [events, setEvents] = useState([]);
-   const praticienID = useSelector((state: RootState) => state.practitioner.id);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
+  const praticienID = useSelector((state: RootState) => state.practitioner.id);
 
   const fetchEvents = async () => {
     try {
       const response = await fetch(
-      `http://localhost:3000/calendar/upcoming-appointments?praticienId=${praticienID}`
+        `http://localhost:3000/calendar/upcoming-appointments?praticienId=${praticienID}`
       );
       const data = await response.json();
 
@@ -28,7 +33,10 @@ export default function ModernCalendar() {
         }));
         setEvents(formattedEvents);
       } else {
-        console.error('Erreur lors de la récupération des rendez-vous :', data.error);
+        console.error(
+          'Erreur lors de la récupération des rendez-vous :',
+          data.error
+        );
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des rendez-vous :', error);
@@ -40,7 +48,17 @@ export default function ModernCalendar() {
   }, []);
 
   const handleEventClick = (info: any) => {
-    alert(`Événement : ${info.event.title}\nDébut : ${info.event.start}\nFin : ${info.event.end}`);
+    setSelectedEvent({
+      title: info.event.title,
+      start: info.event.start,
+      end: info.event.end,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedEvent(null);
   };
 
   return (
@@ -60,6 +78,35 @@ export default function ModernCalendar() {
           height="700px"
         />
       </div>
+
+      {/* Modal */}
+      <Modal
+        title="Détails de l'événement"
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        onOk={handleCloseModal}
+        footer={null}
+        centered
+      >
+        {selectedEvent && (
+          <div>
+            <p>
+              <strong>Titre :</strong> {selectedEvent.title}
+            </p>
+            <p>
+              <strong>Début :</strong>{' '}
+              {new Date(selectedEvent.start).toLocaleString()}
+            </p>
+            <p>
+              <strong>Fin :</strong>{' '}
+              {new Date(selectedEvent.end).toLocaleString()}
+            </p>
+          </div>
+        )}
+        <div className="flex justify-end" onClick={handleCloseModal}>
+          <Button text="OK" />
+        </div>
+      </Modal>
     </div>
   );
 }
