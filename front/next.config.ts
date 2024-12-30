@@ -1,14 +1,7 @@
-import { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   reactStrictMode: true,
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.css$/,
-      use: ['css-loader'],
-      include: /node_modules/,
-    });
-    return config;
+  experimental: {
+    appDir: true, 
   },
 };
 
