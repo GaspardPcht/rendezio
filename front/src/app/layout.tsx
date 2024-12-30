@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   title: "Rendezio",
   description: "Rendezio - Simplifiez vos réservations en ligne",
   keywords: ["Rendezio", "Réservations", "ZenChef", "Application de réservation"],
-  authors: [{ name: "Gaspard Pauchet", url: "https://portfolio-lilac-kappa-24.vercel.app/" }],
+  authors: [{ name: "Gaspard Pauchet", url: "https://gaspardpcht.com" }],
   applicationName: "Rendezio",
   generator: "Next.js",
   openGraph: {

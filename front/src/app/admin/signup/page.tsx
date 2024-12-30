@@ -82,7 +82,7 @@ export default function CreatePractitionerForm() {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/praticien/create', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

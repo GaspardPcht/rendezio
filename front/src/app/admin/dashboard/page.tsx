@@ -23,7 +23,7 @@ export default function Dashboard() {
     const checkGoogleConnection = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/calendar/check-google-connection?praticienId=${praticienId}`,
+          `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/check-google-connection?praticienId=${praticienId}`,
           {
             method: 'GET',
             headers: {
@@ -56,7 +56,7 @@ export default function Dashboard() {
   }, [token, praticienId]);
 
   const handleGoogleConnection = () => {
-    window.location.href = `http://localhost:3000/calendar/auth/google?praticienId=${praticienId}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/auth/google?praticienId=${praticienId}`;
   };
 
   return (

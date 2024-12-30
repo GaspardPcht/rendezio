@@ -32,7 +32,7 @@ export default function Signup() {
     setMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/users/signup", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/users/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

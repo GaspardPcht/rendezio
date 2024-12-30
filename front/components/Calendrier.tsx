@@ -20,7 +20,7 @@ export default function ModernCalendar() {
   const fetchEvents = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/calendar/upcoming-appointments?praticienId=${praticienID}`
+        `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/upcoming-appointments?praticienId=${praticienID}`
       );
       const data = await response.json();
 

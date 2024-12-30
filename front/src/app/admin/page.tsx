@@ -20,7 +20,7 @@ export default function AdminLogin() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/praticien/login', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

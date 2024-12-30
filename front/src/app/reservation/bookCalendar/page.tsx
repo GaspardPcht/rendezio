@@ -42,7 +42,7 @@ export default function AddBook() {
     setLoading(true);
 
     const response = await fetch(
-      'http://localhost:3000/calendar/create-appointment',
+      `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/create-appointment`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

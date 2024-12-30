@@ -10,7 +10,7 @@ export default function ConnexionGoogle() {
 
   const handleGoogleConnect = () => {
     // Redirige vers la route d'authentification Google
-    window.location.href = `http://localhost:3000/calendar/auth/google?praticienId=${praticienId}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/auth/google?praticienId=${praticienId}`;
   };
 
   return (

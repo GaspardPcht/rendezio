@@ -34,7 +34,7 @@ export default function UpcomingAppointments() {
     const fetchAppointments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/calendar/upcoming-appointments?praticienId=${id}`,
+          `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/upcoming-appointments?praticienId=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Ajout du token pour les requêtes sécurisées

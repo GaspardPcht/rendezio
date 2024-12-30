@@ -35,7 +35,7 @@ const ViewClients: React.FC = () => {
   const fetchAllUsersForPractitioner = async (): Promise<User[]> => {
     try {
       const response = await fetch(
-        `http://localhost:3000/praticien/AllUsers?practitionerId=${practitionerId}`,
+        `${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/AllUsers?practitionerId=${practitionerId}`,
         {
           method: 'GET',
           headers: {

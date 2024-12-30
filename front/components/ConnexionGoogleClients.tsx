@@ -5,7 +5,7 @@ export default function ConnexionGoogleClients() {
 
   const handleGoogleConnect = () => {
     // Redirige l'utilisateur vers la route d'authentification Google
-    window.location.href = 'http://localhost:3000/users/auth/google';
+    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACKEND}/users/auth/google`;
   };
 
   return (

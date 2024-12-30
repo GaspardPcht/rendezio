@@ -65,7 +65,7 @@ const PractitionerInfo: React.FC = () => {
   useEffect(() => {
     const fetchPractitioner = async () => {
       try {
-        const response = await fetch('http://localhost:3000/praticien/infos', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/infos`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
