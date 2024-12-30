@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "./globals";
 import ReduxProvider from "../../store/reduxProvider";
 
 
@@ -8,12 +8,12 @@ import ReduxProvider from "../../store/reduxProvider";
 const roboto = localFont({
   src: [
     {
-      path: "./styles/fonts/Roboto-Regular.ttf", // Correct
+      path: "/fonts/Roboto-Regular.ttf", // Correct
       weight: "400",
       style: "normal",
     },
     {
-      path: "./styles/fonts/Roboto-Bold.ttf", // Correct
+      path: "/fonts/Roboto-Bold.ttf", // Correct
       weight: "700",
       style: "normal",
     },
