@@ -1,7 +1,0 @@
-{
-  "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
-  "plugins": ["react", "jsx-a11y"],
-  "rules": {
-    "react/prop-types": "off"
-  }
-}
