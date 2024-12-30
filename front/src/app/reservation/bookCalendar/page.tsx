@@ -47,7 +47,7 @@ export default function AddBook() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          praticienId: '6762e351f4984a7a4a458cc7', // ID EN DURE ATTENTION A CHANGER
+          praticienId: '67726fb8b8bd8f5c31d96faf', // ID EN DURE ATTENTION A CHANGER
           title: `Consultation avec ${name} ${surname}`,
           description: `Consultation avec le patient ${name} ${surname}`,
           startTime: startDate.toISOString(),
