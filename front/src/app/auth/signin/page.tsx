@@ -107,7 +107,7 @@ export default function Signin() {
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
           Vous n'avez pas de compte ?{' '}
-          <a href="/signup" className="text-blue-500 hover:underline">
+          <a href="/auth/signup" className="text-blue-500 hover:underline">
             Inscrivez-vous
           </a>
         </p>

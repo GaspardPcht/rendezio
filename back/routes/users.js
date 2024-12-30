@@ -195,7 +195,7 @@ router.get('/auth/google/callback', async (req, res) => {
     );
 
     // Redirection vers le frontend avec le token dans l'URL
-    res.redirect(`http://localhost:3001/client/dashboard?token=${jwtToken}`);
+    res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
   } catch (error) {
     console.error('Erreur lors de la connexion Google :', error);
     res.status(500).json({

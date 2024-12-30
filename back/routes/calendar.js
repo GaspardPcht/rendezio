@@ -91,7 +91,7 @@ router.get('/auth/google/callback', async (req, res) => {
     });
 
     // Rediriger vers le frontend avec le token UID2
-    const redirectURL = `http://localhost:3001/admin/dashboard?token=${uid2Token}&praticienId=${praticienId}`;
+    const redirectURL = `${process.env.FRONTEND_URL}/admin/dashboard?token=${uid2Token}&praticienId=${praticienId}`;
     console.log('Redirection vers :', redirectURL);
     res.redirect(redirectURL);
   } catch (error) {
