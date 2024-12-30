@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 require('dotenv').config();
-const { sendConfirmationEmail } = require("../utils/emailService");
-const { sendConfirmationSMS } = require("../utils/smsService");
+const { sendConfirmationEmail } = require('../utils/emailService');
+const { sendConfirmationSMS } = require('../utils/smsService');
 
 // Modèle Praticien
 const Praticiens = mongoose.model(
@@ -107,7 +107,8 @@ router.post('/create-appointment', async (req, res) => {
   try {
     console.log('Requête reçue :', req.body);
 
-    const { title, description, startTime, endTime, praticienId, client } = req.body;
+    const { title, description, startTime, endTime, praticienId, client } =
+      req.body;
 
     // Vérifiez si le praticien existe
     const praticien = await Praticiens.findById(praticienId);
@@ -156,29 +157,76 @@ router.post('/create-appointment', async (req, res) => {
 
     console.log('Événement créé :', response.data);
 
-    // Préparer les messages de confirmation
-    const emailMessage = `
-      Bonjour ${client.name},
+    // Préparer l'email HTML
+    const emailContent = `
+   <!DOCTYPE html>
+   <html>
+   <head>
+     <style>
+       body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+       .email-container { background-color: #ffffff; max-width: 600px; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden; }
+       .email-header { background-color: #0078d7; color: #ffffff; text-align: center; padding: 20px; }
+       .email-header img { max-width: 150px; }
+       .email-body { padding: 20px; }
+       .email-body h1 { color: #333333; }
+       .email-body p { color: #555555; line-height: 1.6; }
+       .email-footer { text-align: center; padding: 10px; background-color: #f9f9f9; color: #888888; font-size: 12px; }
+     </style>
+   </head>
+   <body>
+     <div class="email-container">
+       <div class="email-header">
+         <img src="https://yourwebsite.com/logo.png" alt="Logo de votre entreprise" />
+         <h1>Confirmation de rendez-vous</h1>
+       </div>
+       <div class="email-body">
+         <h1>Bonjour ${client.name},</h1>
+         <p>Votre rendez-vous a été confirmé avec succès !</p>
+         <p><strong>Détails du rendez-vous :</strong></p>
+         <ul>
+           <li><strong>Titre :</strong> ${title}</li>
+           <li><strong>Description :</strong> ${description}</li>
+           <li><strong>Date :</strong> ${new Date(startTime).toLocaleString(
+             'fr-FR'
+           )}</li>
+           <li><strong>Heure de fin :</strong> ${new Date(
+             endTime
+           ).toLocaleString('fr-FR')}</li>
+         </ul>
+         <p>Merci d'avoir choisi notre service. Nous sommes ravis de vous accueillir.</p>
+       </div>
+       <div class="email-footer">
+         © ${new Date().getFullYear()} Votre Entreprise. Tous droits réservés.
+       </div>
+     </div>
+   </body>
+   </html>
+ `;
 
-      Votre rendez-vous a été confirmé avec succès !
-      Détails du rendez-vous :
-      - Titre : ${title}
-      - Description : ${description}
-      - Date : ${new Date(startTime).toLocaleString('fr-FR')}
-      - Heure de fin : ${new Date(endTime).toLocaleString('fr-FR')}
-
-      Merci d'avoir choisi notre service.
-    `;
-
-    const smsMessage = `Bonjour ${client.name}, votre rendez-vous "${title}" est confirmé pour le ${new Date(startTime).toLocaleString('fr-FR')}.`;
+    // Appel de la fonction
+    sendConfirmationEmail(
+      client.email,
+      'Confirmation de votre rendez-vous',
+      emailContent
+    );
+    const smsMessage = `Bonjour ${
+      client.name
+    }, votre rendez-vous "${title}" est confirmé pour le ${new Date(
+      startTime
+    ).toLocaleString('fr-FR')}.`;
 
     // Envoyer l'e-mail et le SMS
-    await sendConfirmationEmail(client.email, "Confirmation de votre rendez-vous", emailMessage);
+    await sendConfirmationEmail(
+      client.email,
+      'Confirmation de votre rendez-vous',
+      emailMessage
+    );
     await sendConfirmationSMS(client.phone, smsMessage);
 
     // Réponse de confirmation
     res.status(201).json({
-      message: 'Rendez-vous créé avec succès dans Google Calendar. Notifications envoyées.',
+      message:
+        'Rendez-vous créé avec succès dans Google Calendar. Notifications envoyées.',
       data: response.data,
     });
   } catch (error) {
