@@ -15,7 +15,6 @@ export default function AdminLogin() {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  console.log(process.env.NEXT_PUBLIC_URL_BACKEND)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
