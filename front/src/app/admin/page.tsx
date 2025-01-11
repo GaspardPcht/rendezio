@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useDispatch } from 'react-redux';
 import { setToken, setId } from '../../../reducers/praticien';
+import { cl } from '@fullcalendar/core/internal-common';
 
 export default function AdminLogin() {
   const dispatch = useDispatch();
@@ -13,6 +14,8 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  console.log(process.env.NEXT_PUBLIC_URL_BACKEND)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
