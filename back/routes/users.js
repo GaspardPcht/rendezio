@@ -126,12 +126,100 @@ router.post('/associate-pratitien', async (req, res) => {
   }
 });
 
+// const clientOAuth2Client = new google.auth.OAuth2(
+//   process.env.GOOGLE_CLIENT_ID_CLIENTS,
+//   process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
+//   process.env.GOOGLE_REDIRECT_URI_CLIENTS
+// );
+
+// router.get('/auth/google', (req, res) => {
+//   const url = clientOAuth2Client.generateAuthUrl({
+//     access_type: 'offline',
+//     prompt: 'consent',
+//     scope: [
+//       'https://www.googleapis.com/auth/calendar',
+//       'https://www.googleapis.com/auth/userinfo.profile',
+//       'https://www.googleapis.com/auth/userinfo.email',
+//     ],
+//   });
+
+//   res.redirect(url);
+// });
+
+
+// router.get('/auth/google/callback', async (req, res) => {
+//   try {
+//     const { code } = req.query;
+
+//     if (!code) {
+//       return res.status(400).json({ message: 'Code d’autorisation manquant.' });
+//     }
+
+//     const { tokens } = await clientOAuth2Client.getToken(code);
+//     clientOAuth2Client.setCredentials(tokens);
+
+//     const oauth2 = google.oauth2({
+//       auth: clientOAuth2Client,
+//       version: 'v2',
+//     });
+
+//     const { data } = await oauth2.userinfo.get();
+
+//     if (!data.email) {
+//       return res
+//         .status(400)
+//         .json({ message: 'Impossible de récupérer les informations utilisateur.' });
+//     }
+
+//     let user = await User.findOne({ email: data.email });
+
+//     if (!user) {
+//       user = new User({
+//         firstName: data.given_name,
+//         lastName: data.family_name || '',
+//         email: data.email,
+//         avatar: data.picture,
+//         googleId: data.id,
+//         token: tokens.access_token,
+//       });
+//       await user.save();
+//     } else {
+//       user.token = tokens.access_token;
+//       await user.save();
+//     }
+
+//     // Générer un JWT pour l'utilisateur
+//     const jwtToken = jwt.sign(
+//       {
+//         id: user._id,
+//         email: user.email,
+//         firstName: user.firstName,
+//         avatar: user.avatar,
+//       },
+//       process.env.JWT_SECRET,
+//       { expiresIn: '1h' } 
+//     );
+
+//     // Redirection vers le frontend avec le token dans l'URL
+//     res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
+//   } catch (error) {
+//     console.error('Erreur lors de la connexion Google :', error);
+//     res.status(500).json({
+//       message: 'Erreur lors de la connexion Google.',
+//       error: error.message,
+//     });
+//   }
+// });
+
+
+// Créer un client OAuth2 avec les informations du Google Client
 const clientOAuth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID_CLIENTS,
+  process.env.GOOGLE_CLIENT_ID_CLIENTS, // Utilise la bonne clé client pour les utilisateurs
   process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
-  process.env.GOOGLE_REDIRECT_URI_CLIENTS
+  process.env.GOOGLE_REDIRECT_URI_CLIENTS // URI de redirection pour les clients
 );
 
+// Route d'authentification avec Google
 router.get('/auth/google', (req, res) => {
   const url = clientOAuth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -143,21 +231,25 @@ router.get('/auth/google', (req, res) => {
     ],
   });
 
+  // Rediriger vers Google pour obtenir l'autorisation
   res.redirect(url);
 });
 
-
+// Route de callback après l'authentification
 router.get('/auth/google/callback', async (req, res) => {
   try {
+    // Extraire le code d'authentification depuis l'URL de redirection
     const { code } = req.query;
 
     if (!code) {
       return res.status(400).json({ message: 'Code d’autorisation manquant.' });
     }
 
+    // Échanger le code contre un token d'accès
     const { tokens } = await clientOAuth2Client.getToken(code);
     clientOAuth2Client.setCredentials(tokens);
 
+    // Utiliser l'API Google pour récupérer les informations de l'utilisateur
     const oauth2 = google.oauth2({
       auth: clientOAuth2Client,
       version: 'v2',
@@ -171,9 +263,11 @@ router.get('/auth/google/callback', async (req, res) => {
         .json({ message: 'Impossible de récupérer les informations utilisateur.' });
     }
 
+    // Chercher l'utilisateur dans la base de données
     let user = await User.findOne({ email: data.email });
 
     if (!user) {
+      // Si l'utilisateur n'existe pas, le créer
       user = new User({
         firstName: data.given_name,
         lastName: data.family_name || '',
@@ -184,6 +278,7 @@ router.get('/auth/google/callback', async (req, res) => {
       });
       await user.save();
     } else {
+      // Si l'utilisateur existe, mettre à jour son token
       user.token = tokens.access_token;
       await user.save();
     }
@@ -197,10 +292,10 @@ router.get('/auth/google/callback', async (req, res) => {
         avatar: user.avatar,
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' } 
+      { expiresIn: '1h' } // Durée du token JWT
     );
 
-    // Redirection vers le frontend avec le token dans l'URL
+    // Rediriger vers le frontend avec le token dans l'URL
     res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
   } catch (error) {
     console.error('Erreur lors de la connexion Google :', error);
@@ -210,5 +305,6 @@ router.get('/auth/google/callback', async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;
