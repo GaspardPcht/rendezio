@@ -5,6 +5,7 @@ import Image from "next/image";
 import ConnexionGoogleClients from "../../../../components/ConnexionGoogleClients";
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../../../reducers/user';
+import Button from '../../../../components/Button'
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -156,13 +157,8 @@ export default function Signup() {
      
             <ConnexionGoogleClients />
           <div>
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-              disabled={loading}
-            >
-              {loading ? "Chargement..." : "S'inscrire"}
-            </button>
+          
+            <Button text="S'inscrire" />
           </div>
         </form>
       </div>

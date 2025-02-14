@@ -108,7 +108,7 @@ export default function Home() {
               BookNow
             </h1>
             {/* Bouton visible uniquement sur desktop */}
-            <div className="hidden lg:flex justify-center ml-32 mt-10">
+            <div className="hidden lg:flex justify-center w-[200px] ml-32 mt-10">
               <Button text="En savoir plus" />
             </div>
           </div>

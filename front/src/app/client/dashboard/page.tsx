@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 
 export default function ClientDashboard() {
   const user = useSelector((state: RootState) => state.user);
+  console.log(user.name)
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -36,14 +37,13 @@ export default function ClientDashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    // Si le token existe dans l'URL
     if (token) {
       const userInfo = decodeJwt(token);
 
       if (userInfo) {
         const userPayload = {
-          email: userInfo?.email || 'unknown@email.com',
-          name: userInfo?.firstName || 'Unknown',
+          email: userInfo.email || 'unknown@email.com',
+          name: userInfo.firstName || 'Unknown',
           token: token,
         };
 

@@ -100,10 +100,10 @@ export default function Signin() {
               required
             />
           </div>
+          <ConnexionGoogleClients />
           <div>
             <Button text="Se connecter" />
           </div>
-          <ConnexionGoogleClients />
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
           Vous n'avez pas de compte ?{' '}

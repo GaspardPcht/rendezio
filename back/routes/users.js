@@ -82,43 +82,34 @@ router.get('/auth/google', (req, res) => {
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const { code } = req.query;
+    console.log('=== Début du callback Google ===');
     console.log('Code reçu:', code);
 
     if (!code) {
-      throw new Error("Code d'autorisation manquant");
+      throw new Error('Code d\'autorisation manquant');
     }
 
-    console.log('Tentative d’échange du code avec:', {
-      client_id: process.env.GOOGLE_CLIENT_ID_CLIENTS,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-      code: code
-    });
-
-    // Échange du code contre un token d'accès
-    const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
-      client_id: process.env.GOOGLE_CLIENT_ID_CLIENTS,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-      grant_type: 'authorization_code',
-      code: code
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
-
-    const tokens = tokenResponse.data;
+    // Obtention des tokens
+    const { tokens } = await clientOAuth2Client.getToken(code);
+    console.log('Tokens obtenus:', tokens ? 'OK' : 'NON');
     clientOAuth2Client.setCredentials(tokens);
-    console.log('Tokens reçus:', tokens);
 
     // Récupération des informations de l'utilisateur
-    const oauth2 = google.oauth2({ version: 'v2', auth: clientOAuth2Client });
-    const userInfoResponse = await oauth2.userinfo.get();
+    const oauth2 = google.oauth2('v2');
+    const userInfoResponse = await oauth2.userinfo.get({
+      auth: clientOAuth2Client
+    });
+
     const userData = userInfoResponse.data;
-    console.log('Données utilisateur reçues:', userData.email);
+    console.log('=== Données utilisateur reçues ===');
+    console.log('Email:', userData.email);
+    console.log('Nom:', userData.given_name);
+    console.log('Prénom:', userData.family_name);
 
     // Création ou mise à jour de l'utilisateur
     let user = await User.findOne({ email: userData.email });
     if (!user) {
+      console.log('Création d\'un nouvel utilisateur');
       user = new User({
         firstName: userData.given_name,
         lastName: userData.family_name,
@@ -127,23 +118,41 @@ router.get('/auth/google/callback', async (req, res) => {
         token: tokens.access_token
       });
     } else {
+      console.log('Mise à jour de l\'utilisateur existant');
       user.token = tokens.access_token;
     }
+
     await user.save();
+    console.log('Utilisateur sauvegardé en base de données');
 
     // Génération du JWT
     const jwtToken = jwt.sign(
-      { userId: user._id, email: user.email },
+      { 
+        userId: user._id, 
+        email: user.email,
+        firstName: user.firstName
+      },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
+    console.log('JWT généré avec succès');
 
-    // Redirection vers le frontend
-    const redirectUrl = `${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`;
-    console.log('Redirection vers:', redirectUrl);
-    return res.redirect(redirectUrl);
+    // Log final avant redirection
+    console.log('=== Redirection vers le frontend ===');
+    console.log('URL de redirection:', `${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
+    console.log('Données de l\'utilisateur:', {
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName
+    });
+
+    return res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
+
   } catch (error) {
-    console.error('Erreur dans le callback:', error);
+    console.error('=== ERREUR DANS LE CALLBACK ===');
+    console.error('Message:', error.message);
+    console.error('Stack:', error.stack);
     return res.redirect(
       `${process.env.FRONTEND_URL}/error?message=${encodeURIComponent(error.message)}`
     );
