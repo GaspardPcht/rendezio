@@ -2,10 +2,31 @@
 import Image from 'next/image';
 
 export default function ConnexionGoogleClients() {
-
   const handleGoogleConnect = () => {
-    // Redirige l'utilisateur vers la route d'authentification Google
-    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACKEND}/users/auth/google`;
+    // ID client en dur pour le débogage
+    const clientId = '776442664763-bk27evcc5s2j6oqofbrkprk1thmba2n0.apps.googleusercontent.com';
+    const redirectUri = 'http://localhost:3000/users/auth/google/callback';
+    
+    const scope = [
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/calendar'
+    ].join(' ');
+
+    const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const searchParams = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: scope,
+      access_type: 'offline',
+      prompt: 'consent'
+    });
+
+    const fullUrl = `${googleAuthUrl}?${searchParams.toString()}`;
+    console.log('URL de redirection:', fullUrl);
+    
+    window.location.href = fullUrl;
   };
 
   return (
