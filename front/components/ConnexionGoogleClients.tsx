@@ -6,10 +6,9 @@ export default function ConnexionGoogleClients() {
     // ID client en dur pour le débogage
     const clientId = '776442664763-bk27evcc5s2j6oqofbrkprk1thmba2n0.apps.googleusercontent.com';
     
-    // URL de redirection qui pointe vers le backend
-    const redirectUri = process.env.NODE_ENV === 'production' 
-      ? 'https://rendezio-backend.vercel.app/users/auth/google/callback'  // URL du backend en prod
-      : 'http://localhost:5000/users/auth/google/callback';  // URL du backend en local
+    // Utiliser l'URL du backend depuis les variables d'environnement
+    const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+    const redirectUri = `${backendUrl}/users/auth/google/callback`;
     
     const scope = [
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -28,10 +27,8 @@ export default function ConnexionGoogleClients() {
       prompt: 'consent'
     });
 
-    const fullUrl = `${googleAuthUrl}?${searchParams.toString()}`;
-    console.log('URL de redirection:', fullUrl);
-    
-    window.location.href = fullUrl;
+    // Rediriger vers le backend pour l'authentification
+    window.location.href = `${backendUrl}/users/auth/google`;
   };
 
   return (
