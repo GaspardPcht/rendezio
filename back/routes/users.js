@@ -56,8 +56,8 @@ const clientOAuth2Client = new google.auth.OAuth2(
     : 'http://localhost:5000/users/auth/google/callback'
 );
 
-// Route initiale pour l'authentification Google
-router.get('/auth/google', (req, res) => {
+// Route pour obtenir l'URL d'authentification Google
+router.get('/auth/google/url', (req, res) => {
   try {
     console.log('Génération de l\'URL d\'authentification...');
     
@@ -74,8 +74,7 @@ router.get('/auth/google', (req, res) => {
     });
 
     console.log("URL d'authentification générée:", url);
-    // Rediriger directement vers Google
-    res.redirect(url);
+    res.json({ url });
   } catch (error) {
     console.error("Erreur lors de la génération de l'URL:", error);
     res.status(500).json({
