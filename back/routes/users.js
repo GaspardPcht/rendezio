@@ -80,31 +80,27 @@ router.get('/auth/google/url', (req, res) => {
 // Route de callback Google
 router.get('/auth/google/callback', async (req, res) => {
   try {
-    console.log('Callback reçu:', req.query);
     const { code } = req.query;
     
     if (!code) {
-      console.error('Code manquant dans la requête');
-      // URL de redirection en cas d'erreur
       return res.redirect('https://rendezio-frontend.vercel.app/auth/signin?error=no_code');
     }
 
     // Échange du code contre des tokens
     const { tokens } = await clientOAuth2Client.getToken(code);
-    console.log('Tokens reçus:', tokens ? 'Oui' : 'Non');
     
-    clientOAuth2Client.setCredentials(tokens);
+    if (!tokens) {
+      return res.redirect('https://rendezio-frontend.vercel.app/auth/signin?error=no_tokens');
+    }
 
-    // Récupération des informations de l'utilisateur
+    clientOAuth2Client.setCredentials(tokens);
     const oauth2 = google.oauth2({ version: 'v2', auth: clientOAuth2Client });
     const { data } = await oauth2.userinfo.get();
-    console.log('Informations utilisateur reçues:', data.email);
 
     // Création ou mise à jour de l'utilisateur
     let user = await User.findOne({ email: data.email });
     
     if (!user) {
-      console.log('Création d\'un nouvel utilisateur');
       user = new User({
         email: data.email,
         firstName: data.given_name,
@@ -115,12 +111,9 @@ router.get('/auth/google/callback', async (req, res) => {
       await user.save();
     }
 
-    // URL de redirection en cas de succès
-    console.log('Redirection vers:', 'https://rendezio-frontend.vercel.app/client/dashboard?token=' + user.token);
-    return res.redirect('https://rendezio-frontend.vercel.app/client/dashboard?token=' + user.token);
+    return res.redirect(`https://rendezio-frontend.vercel.app/client/dashboard?token=${user.token}`);
   } catch (error) {
-    console.error('Erreur dans le callback Google:', error);
-    // URL de redirection en cas d'erreur
+    console.error('Erreur callback Google:', error);
     return res.redirect('https://rendezio-frontend.vercel.app/auth/signin?error=auth_failed');
   }
 });

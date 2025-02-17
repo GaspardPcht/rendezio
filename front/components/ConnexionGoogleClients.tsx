@@ -2,30 +2,24 @@
 import Image from 'next/image';
 
 export default function ConnexionGoogleClients() {
-  const handleGoogleConnect = async () => {
-    try {
-      const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
-      console.log('Backend URL:', backendUrl); // Pour le débogage
-      
-      const response = await fetch(`${backendUrl}/users/auth/google/url`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  const handleGoogleConnect = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_CLIENTS;
+    const redirectUri = 'https://rendezio-backend.vercel.app/users/auth/google/callback';
+    
+    const params = new URLSearchParams({
+      client_id: clientId || '',
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+      ].join(' '),
+      access_type: 'offline',
+      prompt: 'consent'
+    });
 
-      const data = await response.json();
-      console.log('URL reçue:', data.url); // Pour le débogage
-      
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('URL de redirection non reçue');
-      }
-    } catch (error: any) {
-      console.error('Erreur:', error);
-      // En cas d'erreur, redirection vers la page de connexion
-      window.location.href = 'https://rendezio-frontend.vercel.app/auth/signin?error=connection_failed';
-    }
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    window.location.href = googleAuthUrl;
   };
 
   return (
