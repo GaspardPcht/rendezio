@@ -18,15 +18,17 @@ export default function ConnexionGoogleClients() {
 
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
     const searchParams = new URLSearchParams({
+      client_id: clientId || '',
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: scope,
       access_type: 'offline',
       prompt: 'consent',
-      state: JSON.stringify({ source: 'client' }) // Ajouter un état pour identifier la source
+      state: JSON.stringify({ source: 'client' })
     });
 
     const fullUrl = `${googleAuthUrl}?${searchParams.toString()}`;
+    console.log('URL de redirection:', fullUrl);
     window.location.href = fullUrl;
   };
 
