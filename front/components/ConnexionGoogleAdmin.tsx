@@ -5,10 +5,25 @@ export default function ConnexionGoogleAdmin() {
   const handleGoogleConnect = async () => {
     try {
       console.log('Tentative de connexion Google...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/auth/google/url`);
-      const data = await response.json();
-      console.log('URL reçue:', data.url);
-      window.location.href = data.url;
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_ADMIN;
+      const redirectUri = 'https://rendezio-backend.vercel.app/praticien/auth/google/callback';
+      
+      const params = new URLSearchParams({
+        client_id: clientId || '',
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: [
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email',
+          'https://www.googleapis.com/auth/calendar'
+        ].join(' '),
+        access_type: 'offline',
+        prompt: 'consent'
+      });
+
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+      console.log('URL de redirection:', googleAuthUrl);
+      window.location.href = googleAuthUrl;
     } catch (error) {
       console.error('Erreur lors de la connexion Google:', error);
     }
