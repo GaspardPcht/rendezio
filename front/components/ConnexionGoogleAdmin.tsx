@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function ConnexionGoogleAdmin() {
   const handleGoogleConnect = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_ADMIN;
-    const redirectUri = 'https://rendezio-backend.vercel.app/praticien/auth/google/callback';
+    const redirectUri = encodeURIComponent('https://rendezio-backend.vercel.app/praticien/auth/google/callback');
     
     const params = new URLSearchParams({
       client_id: clientId || '',
@@ -20,6 +20,7 @@ export default function ConnexionGoogleAdmin() {
     });
 
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    console.log('URL de redirection:', googleAuthUrl);
     window.location.href = googleAuthUrl;
   };
 

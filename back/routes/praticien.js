@@ -195,6 +195,7 @@ router.get('/auth/google/url', (req, res) => {
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const { code } = req.query;
+    console.log('Code reçu:', code); // Pour déboguer
     
     if (!code) {
       console.error('No code provided');
