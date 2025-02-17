@@ -1,40 +1,37 @@
 'use client';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
 
 export default function ConnexionGoogleClients() {
-  const [authUrl, setAuthUrl] = useState<string | null>(null);
-  const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+  const handleGoogleConnect = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_CLIENTS;
+    const redirectUri = process.env.NODE_ENV === 'production'
+      ? 'https://rendezio-backend.vercel.app/users/auth/google/callback'
+      : 'http://localhost:5000/users/auth/google/callback';
 
-  useEffect(() => {
-    const fetchAuthUrl = async () => {
-      if (!backendUrl) {
-        console.error('NEXT_PUBLIC_URL_BACKEND non défini');
-        return;
-      }
+    const scope = [
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/calendar',
+      'openid'
+    ].join(' ');
 
-      try {
-        const response = await fetch(`${backendUrl}/users/auth/google/url`);
-        const data = await response.json();
-        if (data.url) {
-          setAuthUrl(data.url);
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération de l\'URL d\'authentification:', error);
-      }
-    };
+    const params = new URLSearchParams({
+      client_id: clientId || '',
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: scope,
+      access_type: 'offline',
+      prompt: 'consent'
+    });
 
-    fetchAuthUrl();
-  }, [backendUrl]);
-
-  if (!authUrl) {
-    return null;
-  }
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    window.location.href = googleAuthUrl;
+  };
 
   return (
-    <a
-      href={authUrl}
-      className="inline-flex items-center bg-[#EAEAEA] text-black font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition"
+    <button
+      onClick={handleGoogleConnect}
+      className="flex items-center bg-[#EAEAEA] text-black font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition"
     >
       <Image
         src="/Logo/logo-google.png"
@@ -44,6 +41,6 @@ export default function ConnexionGoogleClients() {
         className="mr-2"
       />
       Connectez-vous avec Google
-    </a>
+    </button>
   );
 }

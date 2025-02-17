@@ -88,80 +88,32 @@ router.get('/auth/google/url', (req, res) => {
 router.get('/auth/google/callback', async (req, res) => {
   try {
     const { code } = req.query;
-    console.log('=== Début du callback Google ===');
-    console.log('Code reçu:', code);
-
-    if (!code) {
-      throw new Error('Code d\'autorisation manquant');
-    }
-
-    // Obtention des tokens
+    
     const { tokens } = await clientOAuth2Client.getToken(code);
-    console.log('Tokens obtenus:', tokens ? 'OK' : 'NON');
     clientOAuth2Client.setCredentials(tokens);
 
-    // Récupération des informations de l'utilisateur
-    const oauth2 = google.oauth2('v2');
-    const userInfoResponse = await oauth2.userinfo.get({
-      auth: clientOAuth2Client
-    });
+    const oauth2 = google.oauth2({ version: 'v2', auth: clientOAuth2Client });
+    const { data } = await oauth2.userinfo.get();
 
-    const userData = userInfoResponse.data;
-    console.log('=== Données utilisateur reçues ===');
-    console.log('Email:', userData.email);
-    console.log('Nom:', userData.given_name);
-    console.log('Prénom:', userData.family_name);
-
-    // Création ou mise à jour de l'utilisateur
-    let user = await User.findOne({ email: userData.email });
+    // Créer ou mettre à jour l'utilisateur avec les informations Google
+    let user = await User.findOne({ email: data.email });
+    
     if (!user) {
-      console.log('Création d\'un nouvel utilisateur');
       user = new User({
-        firstName: userData.given_name,
-        lastName: userData.family_name,
-        email: userData.email,
-        googleId: userData.id,
-        token: tokens.access_token
+        email: data.email,
+        firstName: data.given_name,
+        lastName: data.family_name,
+        googleId: data.id,
+        token: generateToken()
       });
-    } else {
-      console.log('Mise à jour de l\'utilisateur existant');
-      user.token = tokens.access_token;
+      await user.save();
     }
 
-    await user.save();
-    console.log('Utilisateur sauvegardé en base de données');
-
-    // Génération du JWT
-    const jwtToken = jwt.sign(
-      { 
-        userId: user._id, 
-        email: user.email,
-        firstName: user.firstName
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-    console.log('JWT généré avec succès');
-
-    // Log final avant redirection
-    console.log('=== Redirection vers le frontend ===');
-    console.log('URL de redirection:', `${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
-    console.log('Données de l\'utilisateur:', {
-      id: user._id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName
-    });
-
-    return res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${jwtToken}`);
-
+    // Rediriger vers le frontend avec le token
+    res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${user.token}`);
   } catch (error) {
-    console.error('=== ERREUR DANS LE CALLBACK ===');
-    console.error('Message:', error.message);
-    console.error('Stack:', error.stack);
-    return res.redirect(
-      `${process.env.FRONTEND_URL}/error?message=${encodeURIComponent(error.message)}`
-    );
+    console.error('Erreur callback Google:', error);
+    res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=auth_failed`);
   }
 });
 
