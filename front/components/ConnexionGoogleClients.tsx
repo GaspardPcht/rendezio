@@ -3,11 +3,10 @@ import Image from 'next/image';
 
 export default function ConnexionGoogleClients() {
   const handleGoogleConnect = () => {
-    // ID client en dur pour le débogage
-    const clientId = '776442664763-bk27evcc5s2j6oqofbrkprk1thmba2n0.apps.googleusercontent.com';
-    
-    // Utiliser l'URL du backend depuis les variables d'environnement
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_CLIENTS;
     const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+    
+    // URL de redirection vers le backend
     const redirectUri = `${backendUrl}/users/auth/google/callback`;
     
     const scope = [
@@ -19,16 +18,16 @@ export default function ConnexionGoogleClients() {
 
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
     const searchParams = new URLSearchParams({
-      client_id: clientId,
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: scope,
       access_type: 'offline',
-      prompt: 'consent'
+      prompt: 'consent',
+      state: JSON.stringify({ source: 'client' }) // Ajouter un état pour identifier la source
     });
 
-    // Rediriger vers le backend pour l'authentification
-    window.location.href = `${backendUrl}/users/auth/google`;
+    const fullUrl = `${googleAuthUrl}?${searchParams.toString()}`;
+    window.location.href = fullUrl;
   };
 
   return (
