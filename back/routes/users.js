@@ -67,7 +67,8 @@ router.get('/auth/google', (req, res) => {
         'https://www.googleapis.com/auth/calendar',
         'openid'
       ],
-      prompt: 'consent'
+      prompt: 'consent',
+      state: JSON.stringify({ source: 'client' })
     });
 
     console.log("URL d'authentification générée:", url);
