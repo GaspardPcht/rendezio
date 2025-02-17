@@ -2,32 +2,25 @@
 import Image from 'next/image';
 
 export default function ConnexionGoogleAdmin() {
-  const handleGoogleConnect = async () => {
-    try {
-      console.log('Tentative de connexion Google...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/auth/google/url`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+  const handleGoogleConnect = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_ADMIN;
+    const redirectUri = 'https://rendezio-backend.vercel.app/praticien/auth/google/callback';
+    
+    const params = new URLSearchParams({
+      client_id: clientId || '',
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/calendar'
+      ].join(' '),
+      access_type: 'offline',
+      prompt: 'consent'
+    });
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération de l\'URL Google');
-      }
-
-      const data = await response.json();
-      console.log('URL reçue:', data.url);
-      
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('URL de redirection manquante');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la connexion Google:', error);
-    }
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    window.location.href = googleAuthUrl;
   };
 
   return (
