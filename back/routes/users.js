@@ -47,13 +47,11 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Configuration du client OAuth2 avec une URL dynamique
+// Configuration du client OAuth2
 const clientOAuth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID_CLIENTS,
   process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
-  process.env.NODE_ENV === 'production'
-    ? 'https://rendezio-backend.vercel.app/users/auth/google/callback'
-    : 'http://localhost:5000/users/auth/google/callback'
+  'https://rendezio-backend.vercel.app/users/auth/google/callback' // URL fixe pour la production
 );
 
 // Route pour obtenir l'URL d'authentification Google
@@ -87,15 +85,20 @@ router.get('/auth/google/url', (req, res) => {
 // Route de callback Google
 router.get('/auth/google/callback', async (req, res) => {
   try {
+    console.log('Callback reçu:', req.query); // Pour le débogage
     const { code } = req.query;
     
+    if (!code) {
+      throw new Error('Code manquant');
+    }
+
     const { tokens } = await clientOAuth2Client.getToken(code);
     clientOAuth2Client.setCredentials(tokens);
 
     const oauth2 = google.oauth2({ version: 'v2', auth: clientOAuth2Client });
     const { data } = await oauth2.userinfo.get();
 
-    // Créer ou mettre à jour l'utilisateur avec les informations Google
+    // Créer ou mettre à jour l'utilisateur
     let user = await User.findOne({ email: data.email });
     
     if (!user) {
@@ -109,7 +112,7 @@ router.get('/auth/google/callback', async (req, res) => {
       await user.save();
     }
 
-    // Rediriger vers le frontend avec le token
+    // Redirection vers le frontend
     res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${user.token}`);
   } catch (error) {
     console.error('Erreur callback Google:', error);

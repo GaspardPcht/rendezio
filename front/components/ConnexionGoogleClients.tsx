@@ -4,9 +4,7 @@ import Image from 'next/image';
 export default function ConnexionGoogleClients() {
   const handleGoogleConnect = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_CLIENTS;
-    const redirectUri = process.env.NODE_ENV === 'production'
-      ? 'https://rendezio-backend.vercel.app/users/auth/google/callback'
-      : 'http://localhost:5000/users/auth/google/callback';
+    const redirectUri = 'https://rendezio-backend.vercel.app/users/auth/google/callback';
 
     const scope = [
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -25,6 +23,7 @@ export default function ConnexionGoogleClients() {
     });
 
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    console.log('URL de redirection:', googleAuthUrl);
     window.location.href = googleAuthUrl;
   };
 
