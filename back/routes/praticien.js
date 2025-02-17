@@ -180,6 +180,8 @@ router.get('/auth/google/url', (req, res) => {
       ],
       prompt: 'consent'
     });
+    
+    console.log('URL générée:', url); // Pour le débogage
     return res.json({ url });
   } catch (error) {
     console.error("Erreur:", error);
