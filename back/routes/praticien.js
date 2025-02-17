@@ -195,6 +195,7 @@ router.get('/auth/google/callback', async (req, res) => {
     const { code } = req.query;
     
     if (!code) {
+      console.error('No code provided');
       return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=no_code');
     }
 
@@ -202,6 +203,7 @@ router.get('/auth/google/callback', async (req, res) => {
     const { tokens } = await adminOAuth2Client.getToken(code);
     
     if (!tokens) {
+      console.error('No tokens received');
       return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=no_tokens');
     }
 
@@ -209,22 +211,20 @@ router.get('/auth/google/callback', async (req, res) => {
     const oauth2 = google.oauth2({ version: 'v2', auth: adminOAuth2Client });
     const { data } = await oauth2.userinfo.get();
 
-    // Mise à jour du praticien avec les informations Google
-    let praticien = await Praticien.findOneAndUpdate(
-      { email: data.email },
-      {
-        $set: {
-          googleId: data.id,
-          googleTokens: tokens
-        }
-      },
-      { new: true }
-    );
+    // Recherche du praticien
+    let praticien = await Praticien.findOne({ email: data.email });
 
     if (!praticien) {
+      console.error('Praticien not found:', data.email);
       return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=user_not_found');
     }
 
+    // Mise à jour des tokens
+    praticien.googleId = data.id;
+    praticien.googleTokens = tokens;
+    await praticien.save();
+
+    console.log('Praticien updated successfully');
     return res.redirect(`https://rendezio-frontend.vercel.app/admin/dashboard?success=true`);
   } catch (error) {
     console.error('Erreur callback Google:', error);

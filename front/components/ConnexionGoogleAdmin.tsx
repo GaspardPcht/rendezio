@@ -4,8 +4,10 @@ import Image from 'next/image';
 export default function ConnexionGoogleAdmin() {
   const handleGoogleConnect = async () => {
     try {
+      console.log('Tentative de connexion Google...');
       const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/praticien/auth/google/url`);
       const data = await response.json();
+      console.log('URL reçue:', data.url);
       window.location.href = data.url;
     } catch (error) {
       console.error('Erreur lors de la connexion Google:', error);
