@@ -51,7 +51,9 @@ router.post('/signup', async (req, res) => {
 const clientOAuth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID_CLIENTS,
   process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
-  process.env.GOOGLE_REDIRECT_URI
+  process.env.NODE_ENV === 'production'
+    ? process.env.GOOGLE_REDIRECT_URI_CLIENTS
+    : process.env.GOOGLE_REDIRECT_URI_CLIENTS_LOCAL
 );
 
 // Route initiale pour l'authentification Google
@@ -62,9 +64,10 @@ router.get('/auth/google', (req, res) => {
       scope: [
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/calendar'
+        'https://www.googleapis.com/auth/calendar',
+        'openid'
       ],
-      prompt: 'consent select_account'
+      prompt: 'consent'
     });
 
     console.log("URL d'authentification générée:", url);

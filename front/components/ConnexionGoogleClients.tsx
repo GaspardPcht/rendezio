@@ -5,12 +5,17 @@ export default function ConnexionGoogleClients() {
   const handleGoogleConnect = () => {
     // ID client en dur pour le débogage
     const clientId = '776442664763-bk27evcc5s2j6oqofbrkprk1thmba2n0.apps.googleusercontent.com';
-    const redirectUri = 'http://localhost:3000/users/auth/google/callback';
+    
+    // URL de redirection qui doit correspondre exactement à celle configurée dans Google Cloud
+    const redirectUri = process.env.NODE_ENV === 'production' 
+      ? 'https://rendezio-frontend.vercel.app/users/auth/google/callback'
+      : 'http://localhost:3000/users/auth/google/callback';
     
     const scope = [
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/calendar'
+      'https://www.googleapis.com/auth/calendar',
+      'openid'
     ].join(' ');
 
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
