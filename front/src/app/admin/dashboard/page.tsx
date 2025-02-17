@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import DashboardCalendar from '../../../../components/Calendrier';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
+import ConnexionGoogleAdmin from '../../../../components/ConnexionGoogleAdmin';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -55,10 +56,6 @@ export default function Dashboard() {
     window.history.replaceState({}, document.title, '/admin/dashboard');
   }, [token, praticienId]);
 
-  const handleGoogleConnection = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACKEND}/calendar/auth/google?praticienId=${praticienId}`;
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* En-tête */}
@@ -105,7 +102,7 @@ export default function Dashboard() {
               <p className="text-gray-700 text-center mb-4">
                 Connectez votre compte Google pour afficher vos rendez-vous.
               </p>
-              <Button text="Lier mon compte Google Calendar" onClick={handleGoogleConnection} />
+              <ConnexionGoogleAdmin />
             </div>
           )}
         </div>
