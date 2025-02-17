@@ -17,12 +17,27 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://rendezio-frontend.vercel.app'
+    'https://rendezio-frontend.vercel.app',
+    'https://rendezio-frontend.vercel.app/'  // Ajout avec le slash final
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+  exposedHeaders: ['Access-Control-Allow-Origin']
 }));
+
+// Ajoutez ce middleware après la configuration CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://rendezio-frontend.vercel.app');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 mongoose
   .connect(process.env.MONGO_URI, {

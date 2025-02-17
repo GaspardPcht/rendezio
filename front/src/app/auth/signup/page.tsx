@@ -37,7 +37,10 @@ export default function Signup() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Origin": "https://rendezio-frontend.vercel.app"
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -61,6 +64,7 @@ export default function Signup() {
       router.push('/client/dashboard');
     } catch (error: any) {
       setMessage(error.message);
+      console.error("Erreur d'inscription:", error);
     } finally {
       setLoading(false);
     }
