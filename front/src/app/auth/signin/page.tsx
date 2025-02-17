@@ -18,15 +18,19 @@ export default function Signin() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to sign in');
+        throw new Error(data.message || 'Erreur de connexion');
       }
 
-      const data = await response.json();
       console.log('Signin successful:', data);
 
       dispatch(
@@ -34,9 +38,9 @@ export default function Signin() {
       );
       router.push('/client/dashboard');
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Erreur de connexion. Veuillez vérifier vos identifiants.');
+      alert(error.message || 'Erreur de connexion. Veuillez vérifier vos identifiants.');
       return null;
     }
   };

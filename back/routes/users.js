@@ -118,4 +118,41 @@ router.get('/auth/google/callback', async (req, res) => {
   }
 });
 
+// Route de connexion
+router.post('/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Vérifier si l'utilisateur existe
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+    }
+
+    // Vérifier le mot de passe
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+    }
+
+    // Générer un nouveau token
+    const token = generateToken();
+    user.token = token;
+    await user.save();
+
+    // Envoyer la réponse
+    res.status(200).json({
+      message: 'Connexion réussie',
+      user: {
+        email: user.email,
+        firstName: user.firstName,
+        token: user.token,
+      },
+    });
+  } catch (error) {
+    console.error('Erreur de connexion:', error);
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
+  }
+});
+
 module.exports = router;
