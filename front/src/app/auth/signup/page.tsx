@@ -36,11 +36,8 @@ export default function Signup() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/users/signup`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Origin": "https://rendezio-frontend.vercel.app"
+          "Content-Type": "application/json"
         },
-        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
