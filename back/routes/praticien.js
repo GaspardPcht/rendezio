@@ -4,6 +4,14 @@ const router = express.Router();
 const generateToken = require('../utils/generateToken'); // Import de la fonction generateToken
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const { google } = require('googleapis');
+
+// Configuration du client OAuth2 pour les praticiens
+const adminOAuth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID_ADMIN,
+  process.env.GOOGLE_CLIENT_SECRET_ADMIN,
+  'https://rendezio-backend.vercel.app/praticien/auth/google/callback'
+);
 
 // Middleware pour vérifier le token
 const verifyToken = async (req, res, next) => {
@@ -157,6 +165,70 @@ router.get('/AllUsers', verifyToken, async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.', error: err.message });
+  }
+});
+
+// Route pour l'authentification Google des praticiens
+router.get('/auth/google/url', (req, res) => {
+  try {
+    const url = adminOAuth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/calendar'
+      ],
+      prompt: 'consent'
+    });
+    return res.json({ url });
+  } catch (error) {
+    console.error("Erreur:", error);
+    return res.status(500).json({
+      message: "Erreur lors de la configuration de l'authentification Google"
+    });
+  }
+});
+
+// Route de callback Google pour les praticiens
+router.get('/auth/google/callback', async (req, res) => {
+  try {
+    const { code } = req.query;
+    
+    if (!code) {
+      return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=no_code');
+    }
+
+    // Échange du code contre des tokens
+    const { tokens } = await adminOAuth2Client.getToken(code);
+    
+    if (!tokens) {
+      return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=no_tokens');
+    }
+
+    adminOAuth2Client.setCredentials(tokens);
+    const oauth2 = google.oauth2({ version: 'v2', auth: adminOAuth2Client });
+    const { data } = await oauth2.userinfo.get();
+
+    // Mise à jour du praticien avec les informations Google
+    let praticien = await Praticien.findOneAndUpdate(
+      { email: data.email },
+      {
+        $set: {
+          googleId: data.id,
+          googleTokens: tokens
+        }
+      },
+      { new: true }
+    );
+
+    if (!praticien) {
+      return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=user_not_found');
+    }
+
+    return res.redirect(`https://rendezio-frontend.vercel.app/admin/dashboard?success=true`);
+  } catch (error) {
+    console.error('Erreur callback Google:', error);
+    return res.redirect('https://rendezio-frontend.vercel.app/admin/dashboard?error=auth_failed');
   }
 });
 
