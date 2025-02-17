@@ -4,9 +4,17 @@ import Image from 'next/image';
 export default function ConnexionGoogleClients() {
   const handleGoogleConnect = () => {
     const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+    console.log('Backend URL:', backendUrl); // Pour déboguer
     
-    // Rediriger directement vers la route d'authentification du backend
-    window.location.href = `${backendUrl}/users/auth/google`;
+    if (!backendUrl) {
+      console.error('NEXT_PUBLIC_URL_BACKEND non défini');
+      return;
+    }
+
+    const authUrl = `${backendUrl}/users/auth/google`;
+    console.log('Auth URL:', authUrl); // Pour déboguer
+    
+    window.location.href = authUrl;
   };
 
   return (
