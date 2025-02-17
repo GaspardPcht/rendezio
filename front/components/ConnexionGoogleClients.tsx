@@ -6,10 +6,10 @@ export default function ConnexionGoogleClients() {
     // ID client en dur pour le débogage
     const clientId = '776442664763-bk27evcc5s2j6oqofbrkprk1thmba2n0.apps.googleusercontent.com';
     
-    // URL de redirection qui doit correspondre exactement à celle configurée dans Google Cloud
+    // URL de redirection qui pointe vers le backend
     const redirectUri = process.env.NODE_ENV === 'production' 
-      ? 'https://rendezio-frontend.vercel.app/users/auth/google/callback'
-      : 'http://localhost:3000/users/auth/google/callback';
+      ? 'https://rendezio-backend.vercel.app/users/auth/google/callback'  // URL du backend en prod
+      : 'http://localhost:5000/users/auth/google/callback';  // URL du backend en local
     
     const scope = [
       'https://www.googleapis.com/auth/userinfo.profile',
