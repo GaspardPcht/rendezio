@@ -94,7 +94,7 @@ export default function Favorites() {
                     <span className="font-semibold">{practitioner.rating}</span>
                   </div>
                   <button
-                    onClick={() => router.push(`/reservation?practitioner=${practitioner.id}`)}
+                    onClick={() => router.push(`/reservation/bookCalendar?practitioner=${practitioner.id}`)}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Prendre RDV

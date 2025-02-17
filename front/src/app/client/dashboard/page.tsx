@@ -219,7 +219,7 @@ export default function ClientDashboard() {
             </div>
             <p className="text-2xl font-bold text-gray-800">3</p>
             <button 
-              onClick={() => router.push('/reservation')}
+              onClick={() => router.push('/reservation/bookCalendar')}
               className="mt-4 text-sm text-blue-500 hover:text-blue-600"
             >
               Prendre un rendez-vous →

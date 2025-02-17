@@ -63,7 +63,7 @@ export default function Appointments() {
             <p className="text-gray-500">Gérez vos rendez-vous à venir et passés</p>
           </div>
           <button
-            onClick={() => router.push('/reservation')}
+            onClick={() => router.push('/reservation/bookCalendar')}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Nouveau rendez-vous
