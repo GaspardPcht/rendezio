@@ -2,7 +2,7 @@
 import Image from 'next/image';
 
 export default function ConnexionGoogleClients() {
-  const handleGoogleConnect = () => {
+  const handleGoogleConnect = async () => {
     const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
     console.log('Backend URL:', backendUrl);
     
@@ -11,11 +11,19 @@ export default function ConnexionGoogleClients() {
       return;
     }
 
-    const authUrl = `${backendUrl}/users/auth/google`;
-    console.log('Redirection vers:', authUrl);
-    
-    // Redirection directe sans vérification HEAD
-    window.location.href = authUrl;
+    try {
+      const response = await fetch(`${backendUrl}/users/auth/google`);
+      const data = await response.json();
+      
+      if (data.url) {
+        console.log('Redirection vers Google:', data.url);
+        window.location.href = data.url;
+      } else {
+        console.error('URL de redirection non reçue');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la connexion à Google:', error);
+    }
   };
 
   return (

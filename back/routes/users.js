@@ -70,11 +70,16 @@ router.get('/auth/google', (req, res) => {
         'openid'
       ],
       prompt: 'consent',
-      state: JSON.stringify({ source: 'client' })
+      state: JSON.stringify({ source: 'client' }),
+      // Ajout d'un paramètre pour indiquer l'origine
+      redirect_uri: process.env.NODE_ENV === 'production'
+        ? 'https://rendezio-backend.vercel.app/users/auth/google/callback'
+        : 'http://localhost:5000/users/auth/google/callback'
     });
 
     console.log("URL d'authentification générée:", url);
-    res.redirect(url);
+    // Au lieu de rediriger, renvoyer l'URL
+    res.json({ url });
   } catch (error) {
     console.error("Erreur lors de la génération de l'URL:", error);
     res.status(500).json({
