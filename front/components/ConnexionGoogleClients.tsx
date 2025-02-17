@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function ConnexionGoogleClients() {
   const handleGoogleConnect = () => {
     const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
-    console.log('Backend URL:', backendUrl); // Pour déboguer
+    console.log('Backend URL:', backendUrl);
     
     if (!backendUrl) {
       console.error('NEXT_PUBLIC_URL_BACKEND non défini');
@@ -12,9 +12,20 @@ export default function ConnexionGoogleClients() {
     }
 
     const authUrl = `${backendUrl}/users/auth/google`;
-    console.log('Auth URL:', authUrl); // Pour déboguer
+    console.log('Tentative de redirection vers:', authUrl);
     
-    window.location.href = authUrl;
+    // Vérifier si le backend est accessible
+    fetch(authUrl, { method: 'HEAD' })
+      .then(response => {
+        if (response.ok) {
+          window.location.href = authUrl;
+        } else {
+          console.error('Le backend n\'est pas accessible:', response.status);
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la vérification du backend:', error);
+      });
   };
 
   return (
