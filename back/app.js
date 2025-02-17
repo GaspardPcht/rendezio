@@ -4,7 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Importer CORS
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -14,21 +14,12 @@ const calendarRouter = require('./routes/calendar');
 const app = express();
 
 // Configuration CORS - version plus permissive
-app.use(cors());  // Permet toutes les origines
-
-// Middleware CORS personnalisé
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');  // Permet toutes les origines
-  res.header('Access-Control-Allow-Methods', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Gestion des requêtes OPTIONS préliminaires
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
+app.use(cors({
+  origin: ['https://rendezio-frontend.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 mongoose
   .connect(process.env.MONGO_URI, {

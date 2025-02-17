@@ -36,8 +36,11 @@ export default function Signup() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/users/signup`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
