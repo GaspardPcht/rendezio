@@ -2,29 +2,23 @@
 import Image from 'next/image';
 
 export default function ConnexionGoogleClients() {
-  const handleGoogleConnect = () => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_CLIENTS;
-    const redirectUri = 'https://rendezio-backend.vercel.app/users/auth/google/callback';
-
-    const scope = [
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/calendar',
-      'openid'
-    ].join(' ');
-
-    const params = new URLSearchParams({
-      client_id: clientId || '',
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: scope,
-      access_type: 'offline',
-      prompt: 'consent'
-    });
-
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-    console.log('URL de redirection:', googleAuthUrl);
-    window.location.href = googleAuthUrl;
+  const handleGoogleConnect = async () => {
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+      
+      // Appeler la route pour obtenir l'URL d'authentification
+      const response = await fetch(`${backendUrl}/users/auth/google/url`);
+      const data = await response.json();
+      
+      if (data.url) {
+        console.log('URL de redirection:', data.url);
+        window.location.href = data.url;
+      } else {
+        console.error('URL de redirection non reçue');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la connexion à Google:', error);
+    }
   };
 
   return (
