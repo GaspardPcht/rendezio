@@ -13,17 +13,14 @@ const calendarRouter = require('./routes/calendar');
 
 const app = express();
 
-// Configuration CORS (autorise toutes les origines par défaut)
-app.use(cors());
-
-// Ou configuration spécifique
-
-// app.use(cors({
-//   origin: 'http://localhost:3000', // Autorise seulement votre frontend local
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
-//   credentials: true, // Si vous utilisez des cookies
-// }));
-
+// Configuration CORS
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://rendezio-frontend.vercel.app'
+  ],
+  credentials: true
+}));
 
 mongoose
   .connect(process.env.MONGO_URI, {
