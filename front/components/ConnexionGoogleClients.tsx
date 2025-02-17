@@ -5,10 +5,20 @@ export default function ConnexionGoogleClients() {
   const handleGoogleConnect = async () => {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+      console.log('Backend URL:', backendUrl); // Vérifier l'URL du backend
       
       // Appeler la route pour obtenir l'URL d'authentification
-      const response = await fetch(`${backendUrl}/users/auth/google/url`);
+      console.log('Tentative de fetch vers:', `${backendUrl}/users/auth/google/url`);
+      const response = await fetch(`${backendUrl}/users/auth/google/url`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      console.log('Statut de la réponse:', response.status);
       const data = await response.json();
+      console.log('Données reçues:', data);
       
       if (data.url) {
         console.log('URL de redirection:', data.url);
@@ -17,7 +27,7 @@ export default function ConnexionGoogleClients() {
         console.error('URL de redirection non reçue');
       }
     } catch (error) {
-      console.error('Erreur lors de la connexion à Google:', error);
+      console.error('Erreur détaillée:', error);
     }
   };
 

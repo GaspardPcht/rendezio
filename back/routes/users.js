@@ -57,7 +57,10 @@ const clientOAuth2Client = new google.auth.OAuth2(
 // Route pour obtenir l'URL d'authentification Google
 router.get('/auth/google/url', (req, res) => {
   try {
-    console.log('Génération de l\'URL d\'authentification...');
+    console.log('Requête reçue pour la génération d\'URL');
+    console.log('Client ID:', process.env.GOOGLE_CLIENT_ID_CLIENTS);
+    console.log('Client Secret présent:', !!process.env.GOOGLE_CLIENT_SECRET_CLIENTS);
+    console.log('URI de redirection:', 'https://rendezio-backend.vercel.app/users/auth/google/callback');
     
     const url = clientOAuth2Client.generateAuthUrl({
       access_type: 'offline',
@@ -74,10 +77,12 @@ router.get('/auth/google/url', (req, res) => {
     console.log("URL d'authentification générée:", url);
     res.json({ url });
   } catch (error) {
-    console.error("Erreur lors de la génération de l'URL:", error);
+    console.error("Erreur complète:", error);
+    console.error("Stack trace:", error.stack);
     res.status(500).json({
       message: "Erreur lors de la configuration de l'authentification Google",
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 });
