@@ -12,20 +12,10 @@ export default function ConnexionGoogleClients() {
     }
 
     const authUrl = `${backendUrl}/users/auth/google`;
-    console.log('Tentative de redirection vers:', authUrl);
+    console.log('Redirection vers:', authUrl);
     
-    // Vérifier si le backend est accessible
-    fetch(authUrl, { method: 'HEAD' })
-      .then(response => {
-        if (response.ok) {
-          window.location.href = authUrl;
-        } else {
-          console.error('Le backend n\'est pas accessible:', response.status);
-        }
-      })
-      .catch(error => {
-        console.error('Erreur lors de la vérification du backend:', error);
-      });
+    // Redirection directe sans vérification HEAD
+    window.location.href = authUrl;
   };
 
   return (

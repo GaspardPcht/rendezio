@@ -19,7 +19,9 @@ app.use(cors({
     'http://localhost:3000',
     'https://rendezio-frontend.vercel.app'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 mongoose
