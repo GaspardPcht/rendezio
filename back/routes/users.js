@@ -51,7 +51,7 @@ router.post('/signup', async (req, res) => {
 const clientOAuth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID_CLIENTS,
   process.env.GOOGLE_CLIENT_SECRET_CLIENTS,
-  'https://rendezio-backend.vercel.app/users/auth/google/callback' // URL fixe pour la production
+  'https://rendezio-backend.vercel.app/users/auth/google/callback'
 );
 
 // Route pour obtenir l'URL d'authentification Google
@@ -82,26 +82,33 @@ router.get('/auth/google/url', (req, res) => {
   }
 });
 
-// Route de callback Google
+// Route de callback Google - IMPORTANT: le chemin doit correspondre exactement à l'URI configuré
 router.get('/auth/google/callback', async (req, res) => {
   try {
-    console.log('Callback reçu:', req.query); // Pour le débogage
+    console.log('Callback reçu:', req.query);
     const { code } = req.query;
     
     if (!code) {
-      throw new Error('Code manquant');
+      console.error('Code manquant dans la requête');
+      return res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=no_code`);
     }
 
+    // Échange du code contre des tokens
     const { tokens } = await clientOAuth2Client.getToken(code);
+    console.log('Tokens reçus:', tokens ? 'Oui' : 'Non');
+    
     clientOAuth2Client.setCredentials(tokens);
 
+    // Récupération des informations de l'utilisateur
     const oauth2 = google.oauth2({ version: 'v2', auth: clientOAuth2Client });
     const { data } = await oauth2.userinfo.get();
+    console.log('Informations utilisateur reçues:', data.email);
 
-    // Créer ou mettre à jour l'utilisateur
+    // Création ou mise à jour de l'utilisateur
     let user = await User.findOne({ email: data.email });
     
     if (!user) {
+      console.log('Création d\'un nouvel utilisateur');
       user = new User({
         email: data.email,
         firstName: data.given_name,
@@ -112,10 +119,10 @@ router.get('/auth/google/callback', async (req, res) => {
       await user.save();
     }
 
-    // Redirection vers le frontend
+    console.log('Redirection vers:', `${process.env.FRONTEND_URL}/client/dashboard?token=${user.token}`);
     res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${user.token}`);
   } catch (error) {
-    console.error('Erreur callback Google:', error);
+    console.error('Erreur dans le callback Google:', error);
     res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=auth_failed`);
   }
 });
