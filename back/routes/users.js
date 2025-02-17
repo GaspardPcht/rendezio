@@ -77,7 +77,7 @@ router.get('/auth/google/url', (req, res) => {
   }
 });
 
-// Route de callback Google - IMPORTANT: le chemin doit correspondre exactement à l'URI configuré
+// Route de callback Google
 router.get('/auth/google/callback', async (req, res) => {
   try {
     console.log('Callback reçu:', req.query);
@@ -85,7 +85,8 @@ router.get('/auth/google/callback', async (req, res) => {
     
     if (!code) {
       console.error('Code manquant dans la requête');
-      return res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=no_code`);
+      // URL de redirection en cas d'erreur
+      return res.redirect('https://rendezio-frontend.vercel.app/auth/signin?error=no_code');
     }
 
     // Échange du code contre des tokens
@@ -114,11 +115,13 @@ router.get('/auth/google/callback', async (req, res) => {
       await user.save();
     }
 
-    console.log('Redirection vers:', `${process.env.FRONTEND_URL}/client/dashboard?token=${user.token}`);
-    res.redirect(`${process.env.FRONTEND_URL}/client/dashboard?token=${user.token}`);
+    // URL de redirection en cas de succès
+    console.log('Redirection vers:', 'https://rendezio-frontend.vercel.app/client/dashboard?token=' + user.token);
+    return res.redirect('https://rendezio-frontend.vercel.app/client/dashboard?token=' + user.token);
   } catch (error) {
     console.error('Erreur dans le callback Google:', error);
-    res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=auth_failed`);
+    // URL de redirection en cas d'erreur
+    return res.redirect('https://rendezio-frontend.vercel.app/auth/signin?error=auth_failed');
   }
 });
 

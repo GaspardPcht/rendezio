@@ -5,26 +5,16 @@ export default function ConnexionGoogleClients() {
   const handleGoogleConnect = async () => {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+      console.log('Backend URL:', backendUrl); // Pour le débogage
       
-      // Ajout d'un timeout de 5 secondes
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const response = await fetch(`${backendUrl}/users/auth/google/url`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        signal: controller.signal
-      });
+      const response = await fetch(`${backendUrl}/users/auth/google/url`);
       
-      clearTimeout(timeoutId);
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('URL reçue:', data.url); // Pour le débogage
       
       if (data.url) {
         window.location.href = data.url;
@@ -33,27 +23,8 @@ export default function ConnexionGoogleClients() {
       }
     } catch (error: any) {
       console.error('Erreur:', error);
-      if (error.name === 'AbortError') {
-        // Redirection directe en cas de timeout
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID_CLIENTS;
-        const redirectUri = 'https://rendezio-backend.vercel.app/users/auth/google/callback';
-        
-        const scope = [
-          'https://www.googleapis.com/auth/userinfo.profile',
-          'https://www.googleapis.com/auth/userinfo.email'
-        ].join(' ');
-
-        const params = new URLSearchParams({
-          client_id: clientId || '',
-          redirect_uri: redirectUri,
-          response_type: 'code',
-          scope: scope,
-          access_type: 'offline',
-          prompt: 'consent'
-        });
-
-        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-      }
+      // En cas d'erreur, redirection vers la page de connexion
+      window.location.href = 'https://rendezio-frontend.vercel.app/auth/signin?error=connection_failed';
     }
   };
 
