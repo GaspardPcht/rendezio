@@ -13,13 +13,9 @@ const calendarRouter = require('./routes/calendar');
 
 const app = express();
 
+
 // Configuration CORS - version plus permissive
-app.use(cors({
-  origin: ['https://rendezio-frontend.vercel.app', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(cors())
 
 mongoose
   .connect(process.env.MONGO_URI, {
